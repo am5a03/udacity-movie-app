@@ -25,6 +25,13 @@ android {
 ext {
     androidXVersion = "1.0.2"
     espressoVersion = "3.1.0"
+    moshiVersion = "1.8.0"
+    picassoVersion = "2.71828"
+    retrofitVersion = "2.5.0"
+    rxjavaVersion = "2.2.7"
+    rxjavaAndroidVersion = "2.1.1"
+
+    // Testing libs
     junitVersion = "4.12"
     testRunnerVersion = "1.1.1"
 }
@@ -32,6 +39,14 @@ ext {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "androidx.appcompat:appcompat:$androidXVersion"
+    implementation "com.squareup.picasso:picasso:$picassoVersion"
+    implementation "com.squareup.moshi:moshi:$moshiVersion"
+    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-moshi:$retrofitVersion"
+    implementation "io.reactivex.rxjava2:rxandroid:$rxjavaAndroidVersion"
+    implementation "io.reactivex.rxjava2:rxjava:$rxjavaVersion"
+
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test:runner:$testRunnerVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
