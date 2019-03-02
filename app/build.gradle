@@ -4,6 +4,10 @@ repositories {
     mavenCentral()
 }
 
+def apikeyPropertiesFile = rootProject.file("secret.properties")
+def apikeyProperties = new Properties()
+apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
+
 android {
     compileSdkVersion 28
     defaultConfig {
@@ -18,12 +22,22 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField("String", "apikey", "\"" + apikeyProperties['API_KEY_V3'] + "\"")
         }
+        debug {
+            minifyEnabled false
+            buildConfigField("String", "API_KEY", "\"" + apikeyProperties['API_KEY_V3'] + "\"")
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
 ext {
     androidXVersion = "1.0.2"
+    daggerVersion = "2.21"
     espressoVersion = "3.1.0"
     moshiVersion = "1.8.0"
     picassoVersion = "2.71828"
@@ -46,6 +60,10 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-moshi:$retrofitVersion"
     implementation "io.reactivex.rxjava2:rxandroid:$rxjavaAndroidVersion"
     implementation "io.reactivex.rxjava2:rxjava:$rxjavaVersion"
+    implementation "com.google.dagger:dagger:$daggerVersion"
+    annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
+    implementation "com.google.dagger:dagger-android-support:$daggerVersion" // if you use the support libraries
+    annotationProcessor "com.google.dagger:dagger-android-processor:$daggerVersion"
 
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test:runner:$testRunnerVersion"
