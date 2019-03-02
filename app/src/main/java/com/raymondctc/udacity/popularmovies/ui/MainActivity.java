@@ -1,6 +1,8 @@
-package com.raymondctc.udacity.popularmovies;
+package com.raymondctc.udacity.popularmovies.ui;
 
 import android.os.Bundle;
+
+import com.raymondctc.udacity.popularmovies.R;
 
 import androidx.annotation.Nullable;
 import dagger.android.support.DaggerAppCompatActivity;
