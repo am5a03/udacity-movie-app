@@ -30,7 +30,7 @@ public class MovieDataSource extends PageKeyedDataSource<Integer, ApiMovie> {
 
     @Override
     public void loadInitial(@NonNull LoadInitialParams<Integer> params, @NonNull LoadInitialCallback<Integer, ApiMovie> callback) {
-        disposable.add(getMovies().subscribe(apiMovies -> {
+        disposable.add(getMovies(1).subscribe(apiMovies -> {
             listState.postValue(ListState.NORMAL);
             Log.d(TAG, "loadInitial: ");
             callback.onResult(apiMovies.results, null, apiMovies.page);
@@ -47,11 +47,18 @@ public class MovieDataSource extends PageKeyedDataSource<Integer, ApiMovie> {
 
     @Override
     public void loadAfter(@NonNull LoadParams<Integer> params, @NonNull LoadCallback<Integer, ApiMovie> callback) {
-
+        disposable.add(getMovies(1).subscribe(apiMovies -> {
+            listState.postValue(ListState.NORMAL);
+            Log.d(TAG, "loadAfter: ");
+            callback.onResult(apiMovies.results, apiMovies.page);
+        }, e -> {
+            listState.postValue(ListState.ERROR);
+            Log.e(TAG, "loadAfter: ", e);
+        }));
     }
 
-    private Single<ApiMovieResponse> getMovies() {
-        return apiService.getPopularMovies()
+    private Single<ApiMovieResponse> getMovies(int page) {
+        return apiService.getPopularMovies(page)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
