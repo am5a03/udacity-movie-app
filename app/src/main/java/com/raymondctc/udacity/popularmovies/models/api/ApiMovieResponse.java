@@ -5,13 +5,13 @@ import com.squareup.moshi.Json;
 import java.util.List;
 
 public class ApiMovieResponse {
-    int page;
+    public int page;
 
     @Json(name = "total_results")
-    int totalResults;
+    public int totalResults;
 
     @Json(name = "total_pages")
-    int totalPages;
+    public int totalPages;
 
-    List<ApiMovie> results;
+    public List<ApiMovie> results;
 }
