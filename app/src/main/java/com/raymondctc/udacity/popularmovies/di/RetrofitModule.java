@@ -34,10 +34,10 @@ public class RetrofitModule {
     @Provides
     @Singleton
     @NonNull
-    Retrofit provideRetrofit(OkHttpClient.Builder httpClient, Interceptor interceptor) {
+    Retrofit provideRetrofit(OkHttpClient.Builder httpClient) {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY);
         httpClient.addInterceptor(logging);
-        httpClient.addInterceptor(interceptor).addNetworkInterceptor(chain -> {
+        httpClient.addNetworkInterceptor(chain -> {
             final Request request = chain.request();
             final HttpUrl url = request.url().newBuilder().addQueryParameter("api_key", BuildConfig.API_KEY_V3).build();
             return chain.proceed(request.newBuilder().url(url).build());

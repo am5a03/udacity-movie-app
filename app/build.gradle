@@ -37,7 +37,7 @@ ext {
     androidXMultiDexVersion = "2.0.1"
     daggerVersion = "2.21"
     espressoVersion = "3.1.0"
-    liveDataVersion = "2.0.0"
+    lifeCycleVersion = "2.0.0"
     moshiVersion = "1.8.0"
     okhttpVersion = "3.12.0"
     pagingVersion = "2.1.0"
@@ -54,7 +54,10 @@ ext {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "androidx.appcompat:appcompat:$androidXVersion"
-    implementation "androidx.lifecycle:lifecycle-livedata:$liveDataVersion"
+
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifeCycleVersion"
+    implementation "androidx.lifecycle:lifecycle-viewmodel:$lifeCycleVersion"
+    implementation "androidx.lifecycle:lifecycle-livedata:$lifeCycleVersion"
     implementation "androidx.multidex:multidex:$androidXMultiDexVersion"
     implementation "androidx.paging:paging-runtime:$pagingVersion"
     implementation "com.google.dagger:dagger:$daggerVersion"

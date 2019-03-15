@@ -19,7 +19,7 @@ import javax.inject.Singleton;
 public class MovieDataSource extends PageKeyedDataSource<Integer, ApiMovie> {
     private static final String TAG = "MovieDataSource";
     private final CompositeDisposable disposable = new CompositeDisposable();
-    private final MutableLiveData listState = new MutableLiveData();
+    private final MutableLiveData<Integer> listState = new MutableLiveData<>();
 
     private ApiService apiService;
 

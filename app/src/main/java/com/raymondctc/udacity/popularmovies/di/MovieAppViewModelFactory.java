@@ -1,37 +1,43 @@
 package com.raymondctc.udacity.popularmovies.di;
 
+import com.raymondctc.udacity.popularmovies.data.MovieDataSourceFactory;
+
 import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import javax.inject.Singleton;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+@Singleton
 public class MovieAppViewModelFactory implements ViewModelProvider.Factory {
+    private final Map<Class<? extends ViewModel>, Provider<ViewModel>> creators;
 
     @Inject
-    public Map<Class<? super ViewModel>, Provider<ViewModel>> creators;
+    public MovieAppViewModelFactory(Map<Class<? extends ViewModel>, Provider<ViewModel>> creators) {
+        this.creators = creators;
+    }
 
-    @NonNull
+    @SuppressWarnings("unchecked")
     @Override
-    public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        try {
-
-            Map.Entry<Class<? super ViewModel>, Provider<ViewModel>> found = null;
-            for (Map.Entry<Class<? super ViewModel>, Provider<ViewModel>> classProviderEntry : creators.entrySet()) {
-                boolean isAssignable = modelClass.isAssignableFrom(classProviderEntry.getKey());
-                if (isAssignable) {
-                    found = classProviderEntry;
+    public <T extends ViewModel> T create(Class<T> modelClass) {
+        Provider<? extends ViewModel> creator = creators.get(modelClass);
+        if (creator == null) {
+            for (Map.Entry<Class<? extends ViewModel>, Provider<ViewModel>> entry : creators.entrySet()) {
+                if (modelClass.isAssignableFrom(entry.getKey())) {
+                    creator = entry.getValue();
                     break;
                 }
             }
-
-            if (found == null || found.getValue() == null)
-                throw new IllegalArgumentException("unknown model class " + modelClass);
-
-            return (T) found.getValue();
+        }
+        if (creator == null) {
+            throw new IllegalArgumentException("unknown model class " + modelClass);
+        }
+        try {
+            return (T) creator.get();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
