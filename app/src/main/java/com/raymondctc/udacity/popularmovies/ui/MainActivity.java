@@ -66,7 +66,14 @@ public class MainActivity extends DaggerAppCompatActivity {
                     swipeRefreshLayout.setRefreshing(false);
                 });
         movieListViewModel.getListState()
-                .observe(this, state -> pagedListAdapter.setNetworkState(state));
+                .observe(this, state -> {
+                    pagedListAdapter.setNetworkState(state);
+                    if (state == MovieDataSource.ListState.LOADING) {
+                        swipeRefreshLayout.setRefreshing(true);
+                    } else if (state == MovieDataSource.ListState.NORMAL) {
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                });
     }
 
     @Override
@@ -78,14 +85,12 @@ public class MainActivity extends DaggerAppCompatActivity {
                     @Override
                     public void onChooseTopRating() {
                         Timber.d("onChooseTopRating");
-                        swipeRefreshLayout.setRefreshing(true);
                         movieListViewModel.refreshByType(MovieDataSource.TYPE_BY_RATING);
                     }
 
                     @Override
                     public void onChoosePopularity() {
                         Timber.d("onChoosePopularity");
-                        swipeRefreshLayout.setRefreshing(true);
                         movieListViewModel.refreshByType(MovieDataSource.TYPE_BY_POPULARITY);
                     }
                 });
