@@ -5,14 +5,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.raymondctc.udacity.popularmovies.R;
 import com.raymondctc.udacity.popularmovies.data.MovieDataSource;
 import com.raymondctc.udacity.popularmovies.models.api.ApiMovie;
-import com.raymondctc.udacity.popularmovies.utils.image.CropSquareTransformation;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Transformation;
 
 import androidx.annotation.NonNull;
 import androidx.paging.PagedListAdapter;
@@ -51,6 +49,7 @@ public class MoviePagedListAdapter extends PagedListAdapter<ApiMovie, RecyclerVi
                     .load(imagePath)
                     .into(((MovieViewHolder) holder).thumbnail)
             ;
+            ((MovieViewHolder) holder).title.setText(apiMovie.title);
             Timber.d("@@ posterPath=" + imagePath);
         } else if (holder instanceof ProgressViewHolder){
 
@@ -106,9 +105,11 @@ public class MoviePagedListAdapter extends PagedListAdapter<ApiMovie, RecyclerVi
     public static class MovieViewHolder extends RecyclerView.ViewHolder {
 
         final ImageView thumbnail;
+        final TextView title;
 
         public MovieViewHolder(@NonNull View itemView) {
             super(itemView);
+            title = itemView.findViewById(R.id.movie_title);
             thumbnail = itemView.findViewById(R.id.movie_thumbnail);
         }
     }
