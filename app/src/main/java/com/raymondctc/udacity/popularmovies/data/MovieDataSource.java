@@ -12,6 +12,8 @@ import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -32,11 +34,10 @@ public class MovieDataSource extends PageKeyedDataSource<Integer, ApiMovie> {
     public void loadInitial(@NonNull LoadInitialParams<Integer> params, @NonNull LoadInitialCallback<Integer, ApiMovie> callback) {
         disposable.add(getMovies(1).subscribe(apiMovies -> {
             listState.postValue(ListState.NORMAL);
-            Log.d(TAG, "loadInitial: ");
-            callback.onResult(apiMovies.results, null, apiMovies.page);
+            callback.onResult(apiMovies.results, null, apiMovies.page + 1);
+            Timber.d("@@ apiMovies=" + apiMovies.results);
         }, e -> {
             listState.postValue(ListState.ERROR);
-            Log.e(TAG, "loadInitial: ", e);
         }));
     }
 
@@ -47,10 +48,10 @@ public class MovieDataSource extends PageKeyedDataSource<Integer, ApiMovie> {
 
     @Override
     public void loadAfter(@NonNull LoadParams<Integer> params, @NonNull LoadCallback<Integer, ApiMovie> callback) {
-        disposable.add(getMovies(1).subscribe(apiMovies -> {
+        disposable.add(getMovies(params.key).subscribe(apiMovies -> {
             listState.postValue(ListState.NORMAL);
             Log.d(TAG, "loadAfter: ");
-            callback.onResult(apiMovies.results, apiMovies.page);
+            callback.onResult(apiMovies.results, apiMovies.page + 1);
         }, e -> {
             listState.postValue(ListState.ERROR);
             Log.e(TAG, "loadAfter: ", e);
@@ -59,8 +60,7 @@ public class MovieDataSource extends PageKeyedDataSource<Integer, ApiMovie> {
 
     private Single<ApiMovieResponse> getMovies(int page) {
         return apiService.getPopularMovies(page)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+                ;
     }
 
     public static class ListState {

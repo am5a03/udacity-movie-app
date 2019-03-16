@@ -5,6 +5,7 @@ import com.raymondctc.udacity.popularmovies.di.DaggerAppComponent;
 import androidx.multidex.MultiDex;
 import dagger.android.AndroidInjector;
 import dagger.android.DaggerApplication;
+import timber.log.Timber;
 
 public class MainApplication extends DaggerApplication {
 
@@ -12,6 +13,10 @@ public class MainApplication extends DaggerApplication {
     public void onCreate() {
         super.onCreate();
         MultiDex.install(this);
+
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree());
+        }
     }
 
     @Override

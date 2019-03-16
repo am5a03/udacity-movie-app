@@ -4,40 +4,61 @@ import com.squareup.moshi.Json;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+
 public class ApiMovie {
     @Json(name = "poster_path")
-    String posterPath;
+    public String posterPath;
 
-    boolean adult;
+    public boolean adult;
 
-    String overview;
+    public String overview;
 
     @Json(name = "release_date")
-    String releaseDate;
+    public String releaseDate;
 
     @Json(name = "genre_ids")
-    List<Integer> genreIds;
+    public List<Integer> genreIds;
 
-    int id;
+    public int id;
 
     @Json(name = "original_title")
-    String originalTitle;
+    public String originalTitle;
 
     @Json(name = "original_language")
-    String originalLanguage;
+    public String originalLanguage;
 
-    String title;
+    public String title;
 
     @Json(name = "backdrop_path")
-    String backdropPath;
+    public String backdropPath;
 
-    String popularity;
+    public String popularity;
 
     @Json(name = "vote_count")
-    int voteCount;
+    public int voteCount;
 
-    boolean video;
+    public boolean video;
 
     @Json(name = "vote_average")
-    float voteAverage;
+    public float voteAverage;
+
+    public static DiffUtil.ItemCallback<ApiMovie> DIFF_CALLBACK = new DiffUtil.ItemCallback<ApiMovie>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull ApiMovie oldItem, @NonNull ApiMovie newItem) {
+            return oldItem.id == newItem.id;
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull ApiMovie oldItem, @NonNull ApiMovie newItem) {
+            return oldItem.equals(newItem);
+        }
+    };
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "title={" + title + "}," + super.toString();
+    }
 }

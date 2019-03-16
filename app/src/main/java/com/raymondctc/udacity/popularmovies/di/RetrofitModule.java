@@ -22,7 +22,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory;
 @Module
 public class RetrofitModule {
 
-    private static final String API = "http://api.themoviedb.org/";
+    private static final String API = "https://api.themoviedb.org/";
 
     @Provides
     @Singleton

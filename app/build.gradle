@@ -45,6 +45,7 @@ ext {
     retrofitVersion = "2.5.0"
     rxjavaVersion = "2.2.7"
     rxjavaAndroidVersion = "2.1.1"
+    timberVersion = "4.7.1"
 
     // Testing libs
     junitVersion = "4.12"
@@ -64,7 +65,7 @@ dependencies {
     annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
     implementation "com.google.dagger:dagger-android-support:$daggerVersion" // if you use the support libraries
     annotationProcessor "com.google.dagger:dagger-android-processor:$daggerVersion"
-
+    implementation "com.jakewharton.timber:timber:$timberVersion"
     implementation "com.squareup.picasso:picasso:$picassoVersion"
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttpVersion"
     implementation "com.squareup.moshi:moshi:$moshiVersion"
