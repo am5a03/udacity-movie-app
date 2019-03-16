@@ -24,10 +24,15 @@ public class MovieDataSource extends PageKeyedDataSource<Integer, ApiMovie> {
     private final MutableLiveData<Integer> listState = new MutableLiveData<>();
 
     private ApiService apiService;
+    private int type;
+
+    public static final int TYPE_BY_RATING = 0;
+    public static final int TYPE_BY_POPULARITY = 1;
 
     @Inject
-    public MovieDataSource(ApiService apiService) {
+    public MovieDataSource(ApiService apiService, int type) {
         this.apiService = apiService;
+        this.type = type;
     }
 
     @Override
@@ -61,8 +66,15 @@ public class MovieDataSource extends PageKeyedDataSource<Integer, ApiMovie> {
     }
 
     private Single<ApiMovieResponse> getMovies(int page) {
-        return apiService.getPopularMovies(page)
-                ;
+        if (TYPE_BY_POPULARITY == type) {
+            return apiService.getPopularMovies(page)
+                    ;
+        } else if (TYPE_BY_RATING == type) {
+            return apiService.getTopRatedMovies(page)
+                    ;
+        } else {
+            throw new IllegalArgumentException("Not a correct type");
+        }
     }
 
     public MutableLiveData<Integer> getListState() {

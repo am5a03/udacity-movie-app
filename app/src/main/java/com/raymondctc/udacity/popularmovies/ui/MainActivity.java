@@ -5,14 +5,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.raymondctc.udacity.popularmovies.R;
+import com.raymondctc.udacity.popularmovies.data.MovieDataSource;
+
 import javax.inject.Inject;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import dagger.android.support.DaggerAppCompatActivity;
 import timber.log.Timber;
 
@@ -26,7 +28,7 @@ public class MainActivity extends DaggerAppCompatActivity {
     MovieListViewModel movieListViewModel;
 
     private MoviePagedListAdapter pagedListAdapter;
-
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -37,6 +39,9 @@ public class MainActivity extends DaggerAppCompatActivity {
         setSupportActionBar(toolbar);
 
         final RecyclerView recyclerView = findViewById(R.id.recycler_view);
+        swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(movieListViewModel::refresh);
+
         final GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
@@ -58,11 +63,10 @@ public class MainActivity extends DaggerAppCompatActivity {
                 .observe(this, apiMovie -> {
                     Timber.d("@@ onCreate: " + apiMovie);
                     pagedListAdapter.submitList(apiMovie);
+                    swipeRefreshLayout.setRefreshing(false);
                 });
         movieListViewModel.getListState()
-                .observe(this, state -> {
-                    pagedListAdapter.setNetworkState(state);
-                });
+                .observe(this, state -> pagedListAdapter.setNetworkState(state));
     }
 
     @Override
@@ -70,6 +74,21 @@ public class MainActivity extends DaggerAppCompatActivity {
         switch (item.getItemId()) {
             case R.id.menu_sort:
                 ChangeSortingDialogFragment fragment = ChangeSortingDialogFragment.newInstance();
+                fragment.setListener(new ChangeSortingDialogFragment.Listener() {
+                    @Override
+                    public void onChooseTopRating() {
+                        Timber.d("onChooseTopRating");
+                        swipeRefreshLayout.setRefreshing(true);
+                        movieListViewModel.refreshByType(MovieDataSource.TYPE_BY_RATING);
+                    }
+
+                    @Override
+                    public void onChoosePopularity() {
+                        Timber.d("onChoosePopularity");
+                        swipeRefreshLayout.setRefreshing(true);
+                        movieListViewModel.refreshByType(MovieDataSource.TYPE_BY_POPULARITY);
+                    }
+                });
                 fragment.show(getSupportFragmentManager(), "");
                 return true;
             default:

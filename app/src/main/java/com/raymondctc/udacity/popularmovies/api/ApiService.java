@@ -12,4 +12,7 @@ public interface ApiService {
 
     @GET("movie/popular")
     Single<ApiMovieResponse> getPopularMovies(@Query("page") final int page);
+
+    @GET("movie/top_rated")
+    Single<ApiMovieResponse> getTopRatedMovies(@Query("page") final int page);
 }

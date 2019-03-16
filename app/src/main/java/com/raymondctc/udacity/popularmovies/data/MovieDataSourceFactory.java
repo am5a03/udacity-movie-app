@@ -10,11 +10,14 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 import androidx.paging.DataSource;
 
+import static com.raymondctc.udacity.popularmovies.data.MovieDataSource.TYPE_BY_POPULARITY;
+
 @Singleton
 public class MovieDataSourceFactory extends DataSource.Factory<Integer, ApiMovie> {
 
     private final ApiService apiService;
     private final MutableLiveData<MovieDataSource> sourceMutableLiveData = new MutableLiveData<>();
+    private int type = TYPE_BY_POPULARITY;
 
     @Inject
     public MovieDataSourceFactory(final ApiService apiService) {
@@ -25,12 +28,16 @@ public class MovieDataSourceFactory extends DataSource.Factory<Integer, ApiMovie
     @NonNull
     @Override
     public DataSource<Integer, ApiMovie> create() {
-        final MovieDataSource movieDataSource = new MovieDataSource(apiService);
+        final MovieDataSource movieDataSource = new MovieDataSource(apiService, type);
         sourceMutableLiveData.postValue(movieDataSource);
         return movieDataSource;
     }
 
     public MutableLiveData<MovieDataSource> getSourceMutableLiveData() {
         return sourceMutableLiveData;
+    }
+
+    public void setRefreshType(int type) {
+        this.type = type;
     }
 }

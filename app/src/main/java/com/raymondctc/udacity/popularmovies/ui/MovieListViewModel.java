@@ -4,7 +4,6 @@ import com.raymondctc.udacity.popularmovies.data.MovieDataSource;
 import com.raymondctc.udacity.popularmovies.data.MovieDataSourceFactory;
 import com.raymondctc.udacity.popularmovies.models.api.ApiMovie;
 
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
@@ -46,5 +45,16 @@ public class MovieListViewModel extends ViewModel {
 
     public LiveData<Integer> getListState() {
         return listState;
+    }
+
+    public void refreshByType(int type) {
+        movieDataSourceFactory.setRefreshType(type);
+        movieDataSourceFactory.getSourceMutableLiveData()
+                .getValue().invalidate();
+    }
+
+    public void refresh() {
+        movieDataSourceFactory.getSourceMutableLiveData()
+                .getValue().invalidate();
     }
 }

@@ -15,7 +15,7 @@ public class RepositoryModule {
     @Provides
     @Singleton
     @NonNull
-    public MovieDataSource provideMovieDataSource(ApiService apiService) {
-        return new MovieDataSource(apiService);
+    public MovieDataSource provideMovieDataSource(ApiService apiService, int type) {
+        return new MovieDataSource(apiService, type);
     }
 }
