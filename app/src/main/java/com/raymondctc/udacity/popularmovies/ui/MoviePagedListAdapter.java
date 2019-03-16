@@ -16,7 +16,6 @@ import com.squareup.picasso.Transformation;
 
 import androidx.annotation.NonNull;
 import androidx.paging.PagedListAdapter;
-import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 import timber.log.Timber;
 
@@ -24,8 +23,6 @@ public class MoviePagedListAdapter extends PagedListAdapter<ApiMovie, RecyclerVi
 
     private Context context;
     private int networkState;
-
-    private final Transformation cropSquareTransformation = new CropSquareTransformation();
 
     protected MoviePagedListAdapter(Context context) {
         super(ApiMovie.DIFF_CALLBACK);
@@ -52,7 +49,6 @@ public class MoviePagedListAdapter extends PagedListAdapter<ApiMovie, RecyclerVi
             final String imagePath = "https://image.tmdb.org/t/p/w185/" + apiMovie.posterPath;
             Picasso.get()
                     .load(imagePath)
-                    .transform(cropSquareTransformation)
                     .into(((MovieViewHolder) holder).thumbnail)
             ;
             Timber.d("@@ posterPath=" + imagePath);
@@ -69,11 +65,34 @@ public class MoviePagedListAdapter extends PagedListAdapter<ApiMovie, RecyclerVi
         return R.layout.view_layout_movie;
     }
 
-    private boolean hasExtraRow() {
+    public boolean hasExtraRow() {
         if (this.networkState == MovieDataSource.ListState.LOADING) {
             return true;
         } else {
             return false;
+        }
+    }
+
+    public void setNetworkState(int networkState) {
+        Timber.d("networkstate=" + networkState);
+        int prevState = this.networkState;
+
+        if (prevState == networkState) return;
+
+        boolean hadExtraRow = hasExtraRow();
+        this.networkState = networkState;
+        boolean hasExtraRow = hasExtraRow();
+
+
+
+        if (hadExtraRow != hasExtraRow) {
+            if (hadExtraRow) {
+                notifyItemRemoved(super.getItemCount());
+            } else {
+                notifyItemInserted(super.getItemCount());
+            }
+        } else if (hasExtraRow && prevState != networkState) {
+            notifyItemChanged(getItemCount() - 1);
         }
     }
 

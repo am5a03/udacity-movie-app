@@ -1,5 +1,6 @@
 package com.raymondctc.udacity.popularmovies.ui;
 
+import com.raymondctc.udacity.popularmovies.data.MovieDataSource;
 import com.raymondctc.udacity.popularmovies.data.MovieDataSourceFactory;
 import com.raymondctc.udacity.popularmovies.models.api.ApiMovie;
 
@@ -9,12 +10,14 @@ import java.util.concurrent.Executors;
 import javax.inject.Inject;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 
 public class MovieListViewModel extends ViewModel {
     private LiveData<PagedList<ApiMovie>> pagedLiveData;
+    private LiveData<Integer> listState;
 
     @Inject
     MovieDataSourceFactory movieDataSourceFactory;
@@ -34,7 +37,14 @@ public class MovieListViewModel extends ViewModel {
             pagedLiveData = new LivePagedListBuilder<>(movieDataSourceFactory, pagedListConfig)
                     .setFetchExecutor(Executors.newFixedThreadPool(2))
                     .build();
+
+            listState = Transformations.switchMap(movieDataSourceFactory.getSourceMutableLiveData(), MovieDataSource::getListState);
+
         }
         return pagedLiveData;
+    }
+
+    public LiveData<Integer> getListState() {
+        return listState;
     }
 }

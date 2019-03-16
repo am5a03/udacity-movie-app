@@ -32,6 +32,7 @@ public class MovieDataSource extends PageKeyedDataSource<Integer, ApiMovie> {
 
     @Override
     public void loadInitial(@NonNull LoadInitialParams<Integer> params, @NonNull LoadInitialCallback<Integer, ApiMovie> callback) {
+        listState.postValue(ListState.LOADING);
         disposable.add(getMovies(1).subscribe(apiMovies -> {
             listState.postValue(ListState.NORMAL);
             callback.onResult(apiMovies.results, null, apiMovies.page + 1);
@@ -48,6 +49,7 @@ public class MovieDataSource extends PageKeyedDataSource<Integer, ApiMovie> {
 
     @Override
     public void loadAfter(@NonNull LoadParams<Integer> params, @NonNull LoadCallback<Integer, ApiMovie> callback) {
+        listState.postValue(ListState.LOADING);
         disposable.add(getMovies(params.key).subscribe(apiMovies -> {
             listState.postValue(ListState.NORMAL);
             Log.d(TAG, "loadAfter: ");
@@ -61,6 +63,10 @@ public class MovieDataSource extends PageKeyedDataSource<Integer, ApiMovie> {
     private Single<ApiMovieResponse> getMovies(int page) {
         return apiService.getPopularMovies(page)
                 ;
+    }
+
+    public MutableLiveData<Integer> getListState() {
+        return listState;
     }
 
     public static class ListState {

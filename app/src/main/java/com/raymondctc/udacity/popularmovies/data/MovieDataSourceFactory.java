@@ -29,4 +29,8 @@ public class MovieDataSourceFactory extends DataSource.Factory<Integer, ApiMovie
         sourceMutableLiveData.postValue(movieDataSource);
         return movieDataSource;
     }
+
+    public MutableLiveData<MovieDataSource> getSourceMutableLiveData() {
+        return sourceMutableLiveData;
+    }
 }

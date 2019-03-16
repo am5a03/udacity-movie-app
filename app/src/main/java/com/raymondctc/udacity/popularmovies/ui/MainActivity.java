@@ -1,15 +1,14 @@
 package com.raymondctc.udacity.popularmovies.ui;
 
 import android.os.Bundle;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.raymondctc.udacity.popularmovies.R;
-import com.raymondctc.udacity.popularmovies.models.api.ApiMovie;
-
 import javax.inject.Inject;
-
 import androidx.annotation.Nullable;
-import androidx.lifecycle.Observer;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -33,13 +32,26 @@ public class MainActivity extends DaggerAppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle(getString(R.string.app_name));
+        setSupportActionBar(toolbar);
 
         final RecyclerView recyclerView = findViewById(R.id.recycler_view);
+        final GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
+        gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                Timber.d("layoutManager=" + position);
+                if (R.layout.view_layout_progress == pagedListAdapter.getItemViewType(position)) {
+                    return 2;
+                } else {
+                    return 1;
+                }
+            }
+        });
         pagedListAdapter = new MoviePagedListAdapter(getApplicationContext());
         recyclerView.setAdapter(pagedListAdapter);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-
-
+        recyclerView.setLayoutManager(gridLayoutManager);
         movieListViewModel = ViewModelProviders.of(this, viewModelFactory)
                 .get(MovieListViewModel.class);
         movieListViewModel.getPagedLiveData()
@@ -47,6 +59,27 @@ public class MainActivity extends DaggerAppCompatActivity {
                     Timber.d("@@ onCreate: " + apiMovie);
                     pagedListAdapter.submitList(apiMovie);
                 });
+        movieListViewModel.getListState()
+                .observe(this, state -> {
+                    pagedListAdapter.setNetworkState(state);
+                });
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_sort:
+                ChangeSortingDialogFragment fragment = ChangeSortingDialogFragment.newInstance();
+                fragment.show(getSupportFragmentManager(), "");
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_toolbar, menu);
+        return true;
     }
 }
