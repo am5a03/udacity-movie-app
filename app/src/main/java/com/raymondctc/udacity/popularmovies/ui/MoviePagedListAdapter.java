@@ -17,6 +17,7 @@ import com.raymondctc.udacity.popularmovies.utils.image.Util;
 import com.squareup.picasso.Picasso;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityOptionsCompat;
 import androidx.paging.PagedListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 import timber.log.Timber;
@@ -124,7 +125,9 @@ public class MoviePagedListAdapter extends PagedListAdapter<ApiMovie, RecyclerVi
             if (context instanceof Activity) {
                 Intent intent = new Intent(context, MovieDetailActivity.class);
                 intent.putExtra(MovieDetailActivity.KEY_MOVIE_DETAIL, (Parcelable) v.getTag());
-                context.startActivity(intent);
+                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context, v.findViewById(R.id.movie_thumbnail), "thumbnail");
+
+                context.startActivity(intent, options.toBundle());
             }
         }
     }
