@@ -1,5 +1,8 @@
 package com.raymondctc.udacity.popularmovies.models.api;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.squareup.moshi.Json;
 
 import java.util.List;
@@ -7,7 +10,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 
-public class ApiMovie {
+public class ApiMovie implements Parcelable {
     @Json(name = "poster_path")
     public String posterPath;
 
@@ -56,9 +59,59 @@ public class ApiMovie {
         }
     };
 
+    protected ApiMovie(Parcel in) {
+        posterPath = in.readString();
+        adult = in.readByte() != 0;
+        overview = in.readString();
+        releaseDate = in.readString();
+        id = in.readInt();
+        originalTitle = in.readString();
+        originalLanguage = in.readString();
+        title = in.readString();
+        backdropPath = in.readString();
+        popularity = in.readString();
+        voteCount = in.readInt();
+        video = in.readByte() != 0;
+        voteAverage = in.readFloat();
+    }
+
+    public static final Creator<ApiMovie> CREATOR = new Creator<ApiMovie>() {
+        @Override
+        public ApiMovie createFromParcel(Parcel in) {
+            return new ApiMovie(in);
+        }
+
+        @Override
+        public ApiMovie[] newArray(int size) {
+            return new ApiMovie[size];
+        }
+    };
+
     @NonNull
     @Override
     public String toString() {
         return "title={" + title + "}," + super.toString();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(posterPath);
+        dest.writeByte((byte) (adult ? 1 : 0));
+        dest.writeString(overview);
+        dest.writeString(releaseDate);
+        dest.writeInt(id);
+        dest.writeString(originalTitle);
+        dest.writeString(originalLanguage);
+        dest.writeString(title);
+        dest.writeString(backdropPath);
+        dest.writeString(popularity);
+        dest.writeInt(voteCount);
+        dest.writeByte((byte) (video ? 1 : 0));
+        dest.writeFloat(voteAverage);
     }
 }

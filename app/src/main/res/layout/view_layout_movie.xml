@@ -10,12 +10,4 @@
         android:layout_height="wrap_content"
         android:scaleType="fitXY"
         android:adjustViewBounds="true"/>
-    <TextView
-        android:id="@+id/movie_title"
-        tools:text="Inception"
-        android:textStyle="bold"
-        android:textColor="@android:color/black"
-        android:padding="@dimen/movieTitlePadding"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
 </LinearLayout>

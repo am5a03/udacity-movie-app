@@ -1,6 +1,9 @@
 package com.raymondctc.udacity.popularmovies.ui;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +13,7 @@ import android.widget.TextView;
 import com.raymondctc.udacity.popularmovies.R;
 import com.raymondctc.udacity.popularmovies.data.MovieDataSource;
 import com.raymondctc.udacity.popularmovies.models.api.ApiMovie;
+import com.raymondctc.udacity.popularmovies.utils.image.Util;
 import com.squareup.picasso.Picasso;
 
 import androidx.annotation.NonNull;
@@ -21,10 +25,12 @@ public class MoviePagedListAdapter extends PagedListAdapter<ApiMovie, RecyclerVi
 
     private Context context;
     private int networkState;
+    private ItemClickListener clickListener;
 
     protected MoviePagedListAdapter(Context context) {
         super(ApiMovie.DIFF_CALLBACK);
         this.context = context;
+        clickListener = new ItemClickListener();
     }
 
     @NonNull
@@ -44,13 +50,14 @@ public class MoviePagedListAdapter extends PagedListAdapter<ApiMovie, RecyclerVi
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof MovieViewHolder) {
             final ApiMovie apiMovie = getItem(position);
-            final String imagePath = "https://image.tmdb.org/t/p/w185/" + apiMovie.posterPath;
+            final String imagePath = Util.formatImagePath(apiMovie.posterPath);
             Picasso.get()
                     .load(imagePath)
                     .into(((MovieViewHolder) holder).thumbnail)
             ;
-            ((MovieViewHolder) holder).title.setText(apiMovie.title);
             Timber.d("@@ posterPath=" + imagePath);
+            holder.itemView.setTag(apiMovie);
+            holder.itemView.setOnClickListener(clickListener);
         } else if (holder instanceof ProgressViewHolder){
 
         }
@@ -75,9 +82,6 @@ public class MoviePagedListAdapter extends PagedListAdapter<ApiMovie, RecyclerVi
     public void setNetworkState(int networkState) {
         Timber.d("networkstate=" + networkState);
         int prevState = this.networkState;
-
-        if (prevState == networkState) return;
-
         boolean hadExtraRow = hasExtraRow();
         this.networkState = networkState;
         boolean hasExtraRow = hasExtraRow();
@@ -105,12 +109,23 @@ public class MoviePagedListAdapter extends PagedListAdapter<ApiMovie, RecyclerVi
     public static class MovieViewHolder extends RecyclerView.ViewHolder {
 
         final ImageView thumbnail;
-        final TextView title;
 
         public MovieViewHolder(@NonNull View itemView) {
             super(itemView);
-            title = itemView.findViewById(R.id.movie_title);
             thumbnail = itemView.findViewById(R.id.movie_thumbnail);
+        }
+    }
+
+    private static class ItemClickListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+            final Context context = v.getContext();
+            if (context instanceof Activity) {
+                Intent intent = new Intent(context, MovieDetailActivity.class);
+                intent.putExtra(MovieDetailActivity.KEY_MOVIE_DETAIL, (Parcelable) v.getTag());
+                context.startActivity(intent);
+            }
         }
     }
 }
