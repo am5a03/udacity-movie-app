@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="materialUnitSmall">8dp</dimen>
+    <dimen name="materialUnitMedium">16dp</dimen>
+
+    <dimen name="shadow">4dp</dimen>
+    <dimen name="movieTitlePadding">8dp</dimen>
+
+    <dimen name="detailMovieTitlePadding">24dp</dimen>
+    <dimen name="detailMovieTextSize">48sp</dimen>
+</resources>
