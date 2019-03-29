@@ -2,7 +2,7 @@ package com.raymondctc.udacity.popularmovies.di;
 
 
 import com.raymondctc.udacity.popularmovies.MainApplication;
-import com.raymondctc.udacity.popularmovies.data.db.MovieDao;
+import com.raymondctc.udacity.popularmovies.data.repository.MovieDao;
 import com.raymondctc.udacity.popularmovies.data.repository.MovieDatabase;
 
 import javax.inject.Singleton;

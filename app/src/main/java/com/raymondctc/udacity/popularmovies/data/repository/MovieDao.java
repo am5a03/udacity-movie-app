@@ -1,4 +1,4 @@
-package com.raymondctc.udacity.popularmovies.data.db;
+package com.raymondctc.udacity.popularmovies.data.repository;
 
 import androidx.room.Dao;
 
