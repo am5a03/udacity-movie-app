@@ -1,4 +1,4 @@
-package com.raymondctc.udacity.popularmovies.data;
+package com.raymondctc.udacity.popularmovies.data.repository;
 
 import com.raymondctc.udacity.popularmovies.api.ApiService;
 import com.raymondctc.udacity.popularmovies.models.api.ApiMovie;
@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 import androidx.paging.DataSource;
 
-import static com.raymondctc.udacity.popularmovies.data.MovieDataSource.TYPE_BY_POPULARITY;
+import static com.raymondctc.udacity.popularmovies.data.repository.MovieDataSource.TYPE_BY_POPULARITY;
 
 @Singleton
 public class MovieDataSourceFactory extends DataSource.Factory<Integer, ApiMovie> {

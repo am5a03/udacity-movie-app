@@ -1,7 +1,7 @@
 package com.raymondctc.udacity.popularmovies.di;
 
 import com.raymondctc.udacity.popularmovies.api.ApiService;
-import com.raymondctc.udacity.popularmovies.data.MovieDataSource;
+import com.raymondctc.udacity.popularmovies.data.repository.MovieDataSource;
 
 import javax.inject.Singleton;
 

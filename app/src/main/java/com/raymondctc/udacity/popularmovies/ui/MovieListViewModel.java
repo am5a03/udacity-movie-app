@@ -1,7 +1,8 @@
 package com.raymondctc.udacity.popularmovies.ui;
 
-import com.raymondctc.udacity.popularmovies.data.MovieDataSource;
-import com.raymondctc.udacity.popularmovies.data.MovieDataSourceFactory;
+import com.raymondctc.udacity.popularmovies.data.repository.MovieDataSource;
+import com.raymondctc.udacity.popularmovies.data.repository.MovieDataSourceFactory;
+import com.raymondctc.udacity.popularmovies.data.repository.MovieDatabase;
 import com.raymondctc.udacity.popularmovies.models.api.ApiMovie;
 
 import java.util.concurrent.Executors;
@@ -20,6 +21,9 @@ public class MovieListViewModel extends ViewModel {
 
     @Inject
     MovieDataSourceFactory movieDataSourceFactory;
+
+    @Inject
+    MovieDatabase movieDatabase;
 
     @Inject
     public MovieListViewModel() {

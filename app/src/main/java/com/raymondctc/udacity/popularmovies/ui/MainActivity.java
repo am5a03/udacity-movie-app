@@ -5,7 +5,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.raymondctc.udacity.popularmovies.R;
-import com.raymondctc.udacity.popularmovies.data.MovieDataSource;
+import com.raymondctc.udacity.popularmovies.data.repository.MovieDataSource;
 
 import javax.inject.Inject;
 import androidx.annotation.Nullable;

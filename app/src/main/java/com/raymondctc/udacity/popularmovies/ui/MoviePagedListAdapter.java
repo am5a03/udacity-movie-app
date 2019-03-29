@@ -8,10 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.raymondctc.udacity.popularmovies.R;
-import com.raymondctc.udacity.popularmovies.data.MovieDataSource;
+import com.raymondctc.udacity.popularmovies.data.repository.MovieDataSource;
 import com.raymondctc.udacity.popularmovies.models.api.ApiMovie;
 import com.raymondctc.udacity.popularmovies.utils.image.Util;
 import com.squareup.picasso.Picasso;

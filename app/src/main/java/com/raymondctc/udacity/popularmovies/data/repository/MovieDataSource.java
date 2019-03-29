@@ -1,4 +1,4 @@
-package com.raymondctc.udacity.popularmovies.data;
+package com.raymondctc.udacity.popularmovies.data.repository;
 
 import android.util.Log;
 
