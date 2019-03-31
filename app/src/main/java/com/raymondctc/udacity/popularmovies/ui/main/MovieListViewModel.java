@@ -1,4 +1,4 @@
-package com.raymondctc.udacity.popularmovies.ui;
+package com.raymondctc.udacity.popularmovies.ui.main;
 
 import com.raymondctc.udacity.popularmovies.data.repository.MovieDataSource;
 import com.raymondctc.udacity.popularmovies.data.repository.MovieDataSourceFactory;

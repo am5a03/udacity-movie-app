@@ -1,6 +1,6 @@
 package com.raymondctc.udacity.popularmovies.di;
 
-import com.raymondctc.udacity.popularmovies.ui.MovieListViewModel;
+import com.raymondctc.udacity.popularmovies.ui.main.MovieListViewModel;
 
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;

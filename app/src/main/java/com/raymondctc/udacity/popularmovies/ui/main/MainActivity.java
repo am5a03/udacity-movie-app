@@ -1,4 +1,4 @@
-package com.raymondctc.udacity.popularmovies.ui;
+package com.raymondctc.udacity.popularmovies.ui.main;
 
 import android.os.Bundle;
 import android.view.Menu;
@@ -6,6 +6,7 @@ import android.view.MenuItem;
 
 import com.raymondctc.udacity.popularmovies.R;
 import com.raymondctc.udacity.popularmovies.data.repository.MovieDataSource;
+import com.raymondctc.udacity.popularmovies.ui.ChangeSortingDialogFragment;
 
 import javax.inject.Inject;
 import androidx.annotation.Nullable;

@@ -1,4 +1,4 @@
-package com.raymondctc.udacity.popularmovies.ui;
+package com.raymondctc.udacity.popularmovies.ui.main;
 
 import android.app.Activity;
 import android.content.Context;
@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import com.raymondctc.udacity.popularmovies.R;
 import com.raymondctc.udacity.popularmovies.data.repository.MovieDataSource;
 import com.raymondctc.udacity.popularmovies.models.api.ApiMovie;
+import com.raymondctc.udacity.popularmovies.ui.detail.MovieDetailActivity;
 import com.raymondctc.udacity.popularmovies.utils.image.Util;
 import com.squareup.picasso.Picasso;
 
