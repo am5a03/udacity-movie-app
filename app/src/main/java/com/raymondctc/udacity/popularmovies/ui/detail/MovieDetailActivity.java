@@ -1,13 +1,9 @@
 package com.raymondctc.udacity.popularmovies.ui.detail;
 
 import android.os.Bundle;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.raymondctc.udacity.popularmovies.R;
 import com.raymondctc.udacity.popularmovies.models.api.ApiMovie;
-import com.raymondctc.udacity.popularmovies.utils.image.Util;
-import com.squareup.picasso.Picasso;
 
 import javax.inject.Inject;
 
@@ -24,14 +20,14 @@ public class MovieDetailActivity extends DaggerAppCompatActivity {
     @Inject
     ViewModelProvider.Factory viewModelFactory;
 
-    private MovieDetailPagedListAdapter pagedListAdapter;
+    private MovieReviewListPagedListAdapter pagedListAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detail);
         final ApiMovie apiMovie = getIntent().getParcelableExtra(KEY_MOVIE_DETAIL);
-        pagedListAdapter = new MovieDetailPagedListAdapter(apiMovie);
+        pagedListAdapter = new MovieReviewListPagedListAdapter(apiMovie);
 
         final RecyclerView recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));

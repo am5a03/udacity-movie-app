@@ -20,12 +20,12 @@ import androidx.annotation.NonNull;
 import androidx.paging.PagedListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class MovieDetailPagedListAdapter extends PagedListAdapter<ApiReviewResponse.ApiReview, RecyclerView.ViewHolder> {
+public class MovieReviewListPagedListAdapter extends PagedListAdapter<ApiReviewResponse.ApiReview, RecyclerView.ViewHolder> {
 
     private ApiMovie apiMovie;
     private final List<ApiVideoResponse.ApiVideo> trailers = new ArrayList<>();
 
-    protected MovieDetailPagedListAdapter(ApiMovie apiMovie) {
+    protected MovieReviewListPagedListAdapter(ApiMovie apiMovie) {
         super(ApiReviewResponse.ApiReview.DIFF_CALLBACK);
         this.apiMovie = apiMovie;
     }
