@@ -22,12 +22,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <androidx.constraintlayout.widget.Guideline
-                android:orientation="vertical"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintGuide_begin="@dimen/materialUnitMedium"
-                android:id="@+id/vertical_guideline_left"
-                />
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintGuide_begin="@dimen/materialUnitMedium"
+            android:id="@+id/vertical_guideline_left"
+            />
 
             <androidx.constraintlayout.widget.Guideline
                 android:orientation="vertical"
