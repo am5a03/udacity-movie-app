@@ -103,6 +103,18 @@
                 tools:text="8.1/10"
                 android:textStyle="bold"/>
 
+            <CheckBox
+                android:id="@+id/fav"
+                android:button="@drawable/ic_fav"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_marginLeft="40dp"
+                android:paddingTop="8dp"
+                app:layout_constraintTop_toBottomOf="@id/rating"
+                app:layout_constraintLeft_toLeftOf="@id/barrier"
+                />
+
             <TextView
                 app:layout_constraintTop_toBottomOf="@id/movie_thumbnail"
                 app:layout_constraintLeft_toLeftOf="@id/vertical_guideline_left"
