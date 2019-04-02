@@ -15,9 +15,11 @@
         android:layout_height="wrap_content"
         />
     <TextView
-        android:layout_marginTop="@dimen/materialUnitSmall"
+
         android:paddingLeft="@dimen/materialUnitMedium"
         android:paddingStart="@dimen/materialUnitMedium"
+        android:paddingEnd="@dimen/materialUnitMedium"
+        android:paddingRight="@dimen/materialUnitMedium"
         android:paddingBottom="@dimen/materialUnitMedium"
         tools:text="Every child comes into the world full of promise, and none more so than Chappie: his is gifted, special, a prodigy. Chappie he is a robot."
         android:id="@+id/reviews"

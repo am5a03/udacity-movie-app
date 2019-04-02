@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="materialUnitTiny">4dp</dimen>
     <dimen name="materialUnitSmall">8dp</dimen>
     <dimen name="materialUnitMedium">16dp</dimen>
 

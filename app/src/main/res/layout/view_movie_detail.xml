@@ -107,6 +107,7 @@
         app:layout_constraintEnd_toStartOf="@id/vertical_guideline_right"
         android:padding="@dimen/materialUnitMedium"
         android:id="@+id/overview"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat"
         tools:text="Every child comes into the world full of promise, and none more so than Chappie: his is gifted, special, a prodigy. Chappie he is a robot."
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />

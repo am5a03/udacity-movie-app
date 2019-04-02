@@ -24,6 +24,8 @@ public class MovieDetailActivity extends DaggerAppCompatActivity {
     MovieReviewListViewModel movieReviewListViewModel;
 
     private MovieReviewListPagedListAdapter pagedListAdapter;
+    private RecyclerView recyclerView;
+    private AdapterObserver adapterObserver = new AdapterObserver();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -32,12 +34,30 @@ public class MovieDetailActivity extends DaggerAppCompatActivity {
         final ApiMovie apiMovie = getIntent().getParcelableExtra(KEY_MOVIE_DETAIL);
         pagedListAdapter = new MovieReviewListPagedListAdapter(apiMovie);
 
-        final RecyclerView recyclerView = findViewById(R.id.recycler_view);
+        recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(pagedListAdapter);
+
+        pagedListAdapter.registerAdapterDataObserver(adapterObserver);
 
         movieReviewListViewModel.getPagedLiveData(apiMovie.id).observe(this, apiReviews -> {
             pagedListAdapter.submitList(apiReviews);
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        pagedListAdapter.unregisterAdapterDataObserver(adapterObserver);
+        super.onDestroy();
+    }
+
+    private class AdapterObserver extends RecyclerView.AdapterDataObserver {
+        @Override
+        public void onItemRangeInserted(int positionStart, int itemCount) {
+            super.onItemRangeInserted(positionStart, itemCount);
+            if (positionStart == 0) {
+                recyclerView.getLayoutManager().scrollToPosition(0);
+            }
+        }
     }
 }
