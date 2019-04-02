@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import com.raymondctc.udacity.popularmovies.R;
 import com.raymondctc.udacity.popularmovies.models.api.ApiMovie;
+import com.raymondctc.udacity.popularmovies.models.api.ApiVideoResponse;
 
 import javax.inject.Inject;
 
@@ -12,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import dagger.android.support.DaggerAppCompatActivity;
+import io.reactivex.functions.Consumer;
 
 public class MovieDetailActivity extends DaggerAppCompatActivity {
 
@@ -42,6 +44,10 @@ public class MovieDetailActivity extends DaggerAppCompatActivity {
 
         movieReviewListViewModel.getPagedLiveData(apiMovie.id).observe(this, apiReviews -> {
             pagedListAdapter.submitList(apiReviews);
+        });
+
+        movieReviewListViewModel.getVideos(apiMovie.id).subscribe(apiVideoResponse -> {
+            pagedListAdapter.addVideos(apiVideoResponse.results);
         });
     }
 

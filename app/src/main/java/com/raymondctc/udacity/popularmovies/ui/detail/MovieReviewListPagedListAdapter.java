@@ -4,6 +4,7 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -65,7 +66,9 @@ public class MovieReviewListPagedListAdapter extends PagedListAdapter<ApiReviewR
         }
 
         if (holder instanceof TrailerViewHolder) {
-
+            ApiVideoResponse.ApiVideo video = trailers.get(position - 1);
+            final TrailerViewHolder viewHolder = (TrailerViewHolder) holder;
+            viewHolder.trailerTitle.setText("Trailer " + position);
         }
 
         if (holder instanceof ReviewViewHolder) {
@@ -82,8 +85,8 @@ public class MovieReviewListPagedListAdapter extends PagedListAdapter<ApiReviewR
             return R.layout.view_movie_detail;
         }
 
-        if (position < trailers.size()) {
-            return R.layout.view_layout_movie;
+        if (trailers.size() > 0 && position <= trailers.size()) {
+            return R.layout.view_trailer;
         }
 
         return R.layout.view_review;
@@ -91,7 +94,7 @@ public class MovieReviewListPagedListAdapter extends PagedListAdapter<ApiReviewR
 
     @Override
     public int getItemCount() {
-        return 1 + // Movie detail
+        return  1 + // Movie detail
                 trailers.size() + // Num of trailers
                 super.getItemCount() // Reviews
                 ;
@@ -124,8 +127,13 @@ public class MovieReviewListPagedListAdapter extends PagedListAdapter<ApiReviewR
 
     public static class TrailerViewHolder extends RecyclerView.ViewHolder {
 
+        public final TextView trailerTitle;
+        public final Button playButton;
+
         public TrailerViewHolder(@NonNull View itemView) {
             super(itemView);
+            this.trailerTitle = itemView.findViewById(R.id.title);
+            this.playButton = itemView.findViewById(R.id.play);
         }
     }
 
