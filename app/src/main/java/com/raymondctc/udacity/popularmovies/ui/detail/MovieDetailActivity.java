@@ -20,6 +20,9 @@ public class MovieDetailActivity extends DaggerAppCompatActivity {
     @Inject
     ViewModelProvider.Factory viewModelFactory;
 
+    @Inject
+    MovieReviewListViewModel movieReviewListViewModel;
+
     private MovieReviewListPagedListAdapter pagedListAdapter;
 
     @Override
@@ -32,5 +35,9 @@ public class MovieDetailActivity extends DaggerAppCompatActivity {
         final RecyclerView recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(pagedListAdapter);
+
+        movieReviewListViewModel.getPagedLiveData(apiMovie.id).observe(this, apiReviews -> {
+            pagedListAdapter.submitList(apiReviews);
+        });
     }
 }

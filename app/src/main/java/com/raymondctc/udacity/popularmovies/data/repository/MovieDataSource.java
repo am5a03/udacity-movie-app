@@ -9,9 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 import androidx.paging.PageKeyedDataSource;
 import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 import javax.inject.Inject;
@@ -81,10 +79,4 @@ public class MovieDataSource extends PageKeyedDataSource<Integer, ApiMovie> {
         return listState;
     }
 
-    public static class ListState {
-        public static final int INIT_LOAD = 0;
-        public static final int LOADING = 1;
-        public static final int NORMAL = 2;
-        public static final int ERROR = 3;
-    }
 }

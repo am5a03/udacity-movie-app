@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.raymondctc.udacity.popularmovies.R;
-import com.raymondctc.udacity.popularmovies.data.repository.MovieDataSource;
+import com.raymondctc.udacity.popularmovies.data.repository.ListState;
 import com.raymondctc.udacity.popularmovies.models.api.ApiMovie;
 import com.raymondctc.udacity.popularmovies.ui.detail.MovieDetailActivity;
 import com.raymondctc.udacity.popularmovies.utils.image.Util;
@@ -73,7 +73,7 @@ public class MoviePagedListAdapter extends PagedListAdapter<ApiMovie, RecyclerVi
     }
 
     public boolean hasExtraRow() {
-        if (this.networkState == MovieDataSource.ListState.LOADING) {
+        if (this.networkState == ListState.LOADING) {
             return true;
         } else {
             return false;

@@ -20,7 +20,6 @@ public class MovieReviewDataSourceFactory extends DataSource.Factory<Integer, Ap
     @Inject
     public MovieReviewDataSourceFactory(ApiService apiService) {
         this.apiService = apiService;
-        this.id = 0;
     }
 
     public void setId(int id) {
@@ -33,5 +32,9 @@ public class MovieReviewDataSourceFactory extends DataSource.Factory<Integer, Ap
         final MovieReviewDataSource dataSource = new MovieReviewDataSource(apiService, id);
         mutableLiveData.postValue(dataSource);
         return dataSource;
+    }
+
+    public MutableLiveData<MovieReviewDataSource> getSourceMutableLiveData() {
+        return mutableLiveData;
     }
 }

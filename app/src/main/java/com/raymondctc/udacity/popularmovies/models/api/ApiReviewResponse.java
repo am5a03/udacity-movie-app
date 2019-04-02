@@ -2,6 +2,8 @@ package com.raymondctc.udacity.popularmovies.models.api;
 
 import com.squareup.moshi.Json;
 
+import java.util.List;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 
@@ -16,8 +18,10 @@ public class ApiReviewResponse {
     @Json(name = "total_results")
     public int totalResults;
 
+    public List<ApiReview> results;
+
     public static class ApiReview {
-        public int id;
+        public String id;
         public String author;
         public String content;
 

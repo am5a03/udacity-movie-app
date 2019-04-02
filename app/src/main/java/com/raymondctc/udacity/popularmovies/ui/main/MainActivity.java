@@ -5,6 +5,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.raymondctc.udacity.popularmovies.R;
+import com.raymondctc.udacity.popularmovies.data.repository.ListState;
 import com.raymondctc.udacity.popularmovies.data.repository.MovieDataSource;
 import com.raymondctc.udacity.popularmovies.ui.ChangeSortingDialogFragment;
 
@@ -69,9 +70,9 @@ public class MainActivity extends DaggerAppCompatActivity {
         movieListViewModel.getListState()
                 .observe(this, state -> {
                     pagedListAdapter.setNetworkState(state);
-                    if (state == MovieDataSource.ListState.LOADING) {
+                    if (state == ListState.LOADING) {
                         swipeRefreshLayout.setRefreshing(true);
-                    } else if (state == MovieDataSource.ListState.NORMAL) {
+                    } else if (state == ListState.NORMAL) {
                         swipeRefreshLayout.setRefreshing(false);
                     }
                 });

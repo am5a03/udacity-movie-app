@@ -1,5 +1,6 @@
 package com.raymondctc.udacity.popularmovies.ui.detail;
 
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,8 +61,7 @@ public class MovieReviewListPagedListAdapter extends PagedListAdapter<ApiReviewR
             movieDetailViewHolder.title.setText(apiMovie.originalTitle);
             movieDetailViewHolder.overview.setText(apiMovie.overview);
             movieDetailViewHolder.year.setText(apiMovie.releaseDate);
-            movieDetailViewHolder.rating.append(String.valueOf(apiMovie.voteAverage));
-            movieDetailViewHolder.rating.append("/10");
+            movieDetailViewHolder.rating.setText(String.valueOf(apiMovie.voteAverage + "/10"));
         }
 
         if (holder instanceof TrailerViewHolder) {
@@ -69,16 +69,24 @@ public class MovieReviewListPagedListAdapter extends PagedListAdapter<ApiReviewR
         }
 
         if (holder instanceof ReviewViewHolder) {
-
+            ApiReviewResponse.ApiReview review = getItem( position - trailers.size() - 1);
+            final ReviewViewHolder reviewViewHolder = (ReviewViewHolder) holder;
+            reviewViewHolder.author.setText(review.author);
+            reviewViewHolder.reviews.setText(Html.fromHtml(review.content));
         }
     }
 
     @Override
     public int getItemViewType(int position) {
-        switch (position) {
-            case 0: return R.layout.view_movie_detail;
+        if (position == 0) {
+            return R.layout.view_movie_detail;
         }
-        return super.getItemViewType(position);
+
+        if (position < trailers.size()) {
+            return R.layout.view_layout_movie;
+        }
+
+        return R.layout.view_review;
     }
 
     @Override
@@ -91,6 +99,7 @@ public class MovieReviewListPagedListAdapter extends PagedListAdapter<ApiReviewR
 
     public void addVideos(List<ApiVideoResponse.ApiVideo> videos) {
         trailers.addAll(videos);
+        notifyItemRangeInserted(1, videos.size());
     }
 
     public static class MovieDetailViewHolder extends RecyclerView.ViewHolder {
@@ -121,9 +130,13 @@ public class MovieReviewListPagedListAdapter extends PagedListAdapter<ApiReviewR
     }
 
     public static class ReviewViewHolder extends RecyclerView.ViewHolder {
+        public final TextView author;
+        public final TextView reviews;
 
         public ReviewViewHolder(@NonNull View itemView) {
             super(itemView);
+            author = itemView.findViewById(R.id.author);
+            reviews = itemView.findViewById(R.id.reviews);
         }
     }
 }
