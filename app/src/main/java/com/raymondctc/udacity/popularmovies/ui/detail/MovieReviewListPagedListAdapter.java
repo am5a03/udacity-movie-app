@@ -32,7 +32,7 @@ public class MovieReviewListPagedListAdapter extends PagedListAdapter<ApiReviewR
     private final View.OnClickListener clickListener;
     private final List<ApiVideoResponse.ApiVideo> trailers = Collections.synchronizedList(new ArrayList<>());
 
-    protected MovieReviewListPagedListAdapter(ApiMovie apiMovie, View.OnClickListener clickListener) {
+    MovieReviewListPagedListAdapter(ApiMovie apiMovie, View.OnClickListener clickListener) {
         super(ApiReviewResponse.ApiReview.DIFF_CALLBACK);
         this.apiMovie = apiMovie;
         this.clickListener = clickListener;
@@ -129,15 +129,15 @@ public class MovieReviewListPagedListAdapter extends PagedListAdapter<ApiReviewR
 
     public static class MovieDetailViewHolder extends RecyclerView.ViewHolder {
 
-        public final ImageView thumbnail;
-        public final TextView title;
-        public final TextView overview;
-        public final TextView year;
-        public final TextView rating;
-        public final TextView length;
-        public final CheckBox favButton;
+        final ImageView thumbnail;
+        final TextView title;
+        final TextView overview;
+        final TextView year;
+        final TextView rating;
+        final TextView length;
+        final CheckBox favButton;
 
-        public MovieDetailViewHolder(@NonNull View itemView) {
+        MovieDetailViewHolder(@NonNull View itemView) {
             super(itemView);
             thumbnail = itemView.findViewById(R.id.movie_thumbnail);
             title = itemView.findViewById(R.id.title);
@@ -151,11 +151,11 @@ public class MovieReviewListPagedListAdapter extends PagedListAdapter<ApiReviewR
 
     public static class TrailerViewHolder extends RecyclerView.ViewHolder {
 
-        public final TextView trailerTitle;
-        public final Button playButton;
-        public final TextView sectionHeader;
+        final TextView trailerTitle;
+        final Button playButton;
+        final TextView sectionHeader;
 
-        public TrailerViewHolder(@NonNull View itemView) {
+        TrailerViewHolder(@NonNull View itemView) {
             super(itemView);
             this.sectionHeader = itemView.findViewById(R.id.trailer_section_header);
             this.trailerTitle = itemView.findViewById(R.id.title);
@@ -164,11 +164,11 @@ public class MovieReviewListPagedListAdapter extends PagedListAdapter<ApiReviewR
     }
 
     public static class ReviewViewHolder extends RecyclerView.ViewHolder {
-        public final TextView author;
-        public final TextView reviews;
-        public final TextView sectionHeader;
+        final TextView author;
+        final TextView reviews;
+        final TextView sectionHeader;
 
-        public ReviewViewHolder(@NonNull View itemView) {
+        ReviewViewHolder(@NonNull View itemView) {
             super(itemView);
             author = itemView.findViewById(R.id.author);
             reviews = itemView.findViewById(R.id.reviews);

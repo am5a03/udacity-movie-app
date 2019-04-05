@@ -22,6 +22,8 @@ import androidx.paging.PagedListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 import timber.log.Timber;
 
+import static com.raymondctc.udacity.popularmovies.ui.main.MainActivity.MOVIE_DETAIL_ACTIVITY_REQUEST_CODE;
+
 public class MoviePagedListAdapter extends PagedListAdapter<ApiMovie, RecyclerView.ViewHolder> {
 
     private Context context;
@@ -58,6 +60,7 @@ public class MoviePagedListAdapter extends PagedListAdapter<ApiMovie, RecyclerVi
             ;
             Timber.d("@@ posterPath=" + imagePath);
             holder.itemView.setTag(apiMovie);
+            holder.itemView.setTag(R.id.movie_position, position);
             holder.itemView.setOnClickListener(clickListener);
         } else if (holder instanceof ProgressViewHolder){
 
@@ -125,9 +128,10 @@ public class MoviePagedListAdapter extends PagedListAdapter<ApiMovie, RecyclerVi
             if (context instanceof Activity) {
                 Intent intent = new Intent(context, MovieDetailActivity.class);
                 intent.putExtra(MovieDetailActivity.KEY_MOVIE_DETAIL, (Parcelable) v.getTag());
+                intent.putExtra(MovieDetailActivity.KEY_MOVIE_POSITION, (Integer) v.getTag(R.id.movie_position));
                 ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context, v.findViewById(R.id.movie_thumbnail), "thumbnail");
 
-                context.startActivity(intent, options.toBundle());
+                ((Activity) context).startActivityForResult(intent, MOVIE_DETAIL_ACTIVITY_REQUEST_CODE, options.toBundle());
             }
         }
     }

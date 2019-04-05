@@ -61,6 +61,9 @@ public class MovieDataSource extends PageKeyedDataSource<String, ApiMovie> {
                     callback.onResult(convertedList, null, nextKey);
                     Timber.d("@@ apiMovies, init=" + apiMovies.results + ", nextKey=" + nextKey);
                 }, e -> {
+                    final List<Movie> movieList = database.getMovieDao().getMoviesByFav(20, 0);
+                    final List<ApiMovie> convertedList = transformMovieListToApiMovieList(movieList);
+                    callback.onResult(convertedList, null, formatNextKey(1, 20));
                     listState.postValue(ListState.ERROR);
                 }));
     }
@@ -189,6 +192,7 @@ public class MovieDataSource extends PageKeyedDataSource<String, ApiMovie> {
         apiMovie.posterPath = movie.posterPath;
         apiMovie.releaseDate = movie.releaseDate;
         apiMovie.voteAverage = movie.voteAverage;
+        apiMovie.setFavTimestamp(movie.favTimestamp);
         return apiMovie;
     }
 

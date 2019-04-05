@@ -16,10 +16,13 @@ import com.raymondctc.udacity.popularmovies.models.api.ApiVideoResponse;
 import com.raymondctc.udacity.popularmovies.models.db.Movie;
 import com.raymondctc.udacity.popularmovies.utils.image.Util;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.LiveData;
@@ -32,15 +35,19 @@ import androidx.paging.PagedList;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class MovieReviewListViewModel extends ViewModel implements LifecycleObserver {
+    public static final String KEY_VIDEOS = "videos";
+
 
     private LiveData<PagedList<ApiReviewResponse.ApiReview>> pagedListLiveData;
     private LiveData<Integer> listState;
-    private final MutableLiveData<Uri> videoLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<ApiVideoResponse.ApiVideo>> videoListLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Uri> videoUriLiveData = new MutableLiveData<>();
     private final CompositeDisposable disposable = new CompositeDisposable();
+    private final ArrayList<ApiVideoResponse.ApiVideo> videos = new ArrayList<>();
 
     @Inject
     MovieReviewDataSourceFactory movieReviewDataSourceFactory;
@@ -83,7 +90,7 @@ public class MovieReviewListViewModel extends ViewModel implements LifecycleObse
                 break;
             case R.id.play:
                 final ApiVideoResponse.ApiVideo video = (ApiVideoResponse.ApiVideo) o;
-                videoLiveData.postValue(Uri.parse(Util.formatYoutubeVideoPath(video.key)));
+                videoUriLiveData.postValue(Uri.parse(Util.formatYoutubeVideoPath(video.key)));
                 break;
         }
     };
@@ -108,16 +115,17 @@ public class MovieReviewListViewModel extends ViewModel implements LifecycleObse
         return pagedListLiveData;
     }
 
-    Single<ApiVideoResponse> getVideos(int id) {
-        return apiService.getVideos(String.valueOf(id))
+    void getVideos(int id) {
+        disposable.add(
+                apiService.getVideos(String.valueOf(id))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doAfterSuccess(new Consumer<ApiVideoResponse>() {
-                    @Override
-                    public void accept(ApiVideoResponse apiVideoResponse) throws Exception {
-
-                    }
-                });
+                .subscribe(apiVideoResponse -> {
+                    videos.clear();
+                    videos.addAll(apiVideoResponse.results);
+                    videoListLiveData.postValue(videos);
+                })
+        );
     }
 
     View.OnClickListener getClickListener() {
@@ -125,11 +133,7 @@ public class MovieReviewListViewModel extends ViewModel implements LifecycleObse
     }
 
     LiveData<Uri> getVideoUriLiveData() {
-        return videoLiveData;
-    }
-
-    void saveInstaceState(Bundle bundle) {
-
+        return videoUriLiveData;
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
@@ -139,7 +143,8 @@ public class MovieReviewListViewModel extends ViewModel implements LifecycleObse
         disposable.dispose();
     }
 
-    CompositeDisposable getDisposable() {
-        return disposable;
+
+    MutableLiveData<List<ApiVideoResponse.ApiVideo>> getVideoListLiveData() {
+        return videoListLiveData;
     }
 }

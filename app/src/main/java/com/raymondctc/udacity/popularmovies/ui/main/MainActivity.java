@@ -1,5 +1,6 @@
 package com.raymondctc.udacity.popularmovies.ui.main;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,11 +27,11 @@ public class MainActivity extends DaggerAppCompatActivity {
     @Inject
     ViewModelProvider.Factory viewModelFactory;
 
-    @Inject
-    MovieListViewModel movieListViewModel;
-
+    private MovieListViewModel movieListViewModel;
     private MoviePagedListAdapter pagedListAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
+
+    public static final int MOVIE_DETAIL_ACTIVITY_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,6 +40,8 @@ public class MainActivity extends DaggerAppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle(getString(R.string.app_name));
         setSupportActionBar(toolbar);
+        movieListViewModel = ViewModelProviders.of(this, viewModelFactory)
+                .get(MovieListViewModel.class);
 
         final RecyclerView recyclerView = findViewById(R.id.recycler_view);
         swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
@@ -59,8 +62,6 @@ public class MainActivity extends DaggerAppCompatActivity {
         pagedListAdapter = new MoviePagedListAdapter(getApplicationContext());
         recyclerView.setAdapter(pagedListAdapter);
         recyclerView.setLayoutManager(gridLayoutManager);
-        movieListViewModel = ViewModelProviders.of(this, viewModelFactory)
-                .get(MovieListViewModel.class);
         movieListViewModel.getPagedLiveData()
                 .observe(this, apiMovie -> {
                     Timber.d("@@ onCreate: " + apiMovie);
@@ -107,5 +108,14 @@ public class MainActivity extends DaggerAppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_toolbar, menu);
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            movieListViewModel.handleActivityResult(requestCode, resultCode, data);
+        }
+
     }
 }
