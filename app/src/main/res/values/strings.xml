@@ -7,5 +7,7 @@
     </string-array>
 
     <string name="trailers">Trailers</string>
+    <string name="trailer">Trailer %1$s</string>
     <string name="reviews">Reviews</string>
+    <string name="play">Play</string>
 </resources>

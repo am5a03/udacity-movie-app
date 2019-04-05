@@ -1,5 +1,6 @@
 package com.raymondctc.udacity.popularmovies.ui.detail;
 
+import android.content.Context;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,17 +18,19 @@ import com.raymondctc.udacity.popularmovies.utils.image.Util;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.paging.PagedListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
+import timber.log.Timber;
 
 public class MovieReviewListPagedListAdapter extends PagedListAdapter<ApiReviewResponse.ApiReview, RecyclerView.ViewHolder> {
 
     private final ApiMovie apiMovie;
     private final View.OnClickListener clickListener;
-    private final List<ApiVideoResponse.ApiVideo> trailers = new ArrayList<>();
+    private final List<ApiVideoResponse.ApiVideo> trailers = Collections.synchronizedList(new ArrayList<>());
 
     protected MovieReviewListPagedListAdapter(ApiMovie apiMovie, View.OnClickListener clickListener) {
         super(ApiReviewResponse.ApiReview.DIFF_CALLBACK);
@@ -61,6 +64,7 @@ public class MovieReviewListPagedListAdapter extends PagedListAdapter<ApiReviewR
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        final Context context = holder.itemView.getContext();
         if (holder instanceof MovieDetailViewHolder) {
             final MovieDetailViewHolder movieDetailViewHolder = (MovieDetailViewHolder) holder;
             Picasso.get().load(Util.formatImagePath(apiMovie.posterPath))
@@ -74,17 +78,21 @@ public class MovieReviewListPagedListAdapter extends PagedListAdapter<ApiReviewR
         }
 
         if (holder instanceof TrailerViewHolder) {
-            ApiVideoResponse.ApiVideo video = trailers.get(position - 1);
+            final int pos = position - 1;
+            ApiVideoResponse.ApiVideo video = trailers.get(pos);
             final TrailerViewHolder viewHolder = (TrailerViewHolder) holder;
-            viewHolder.trailerTitle.setText("Trailer " + position);
+            viewHolder.trailerTitle.setText(String.format(context.getString(R.string.trailer), String.valueOf(position)));
             viewHolder.playButton.setTag(video);
+            viewHolder.sectionHeader.setVisibility(pos == 0 ? View.VISIBLE : View.GONE);
         }
 
         if (holder instanceof ReviewViewHolder) {
-            ApiReviewResponse.ApiReview review = getItem( position - trailers.size() - 1);
+            final int pos = position - trailers.size() - 1;
+            ApiReviewResponse.ApiReview review = getItem(pos);
             final ReviewViewHolder reviewViewHolder = (ReviewViewHolder) holder;
             reviewViewHolder.author.setText(review.author);
             reviewViewHolder.reviews.setText(Html.fromHtml(review.content));
+            reviewViewHolder.sectionHeader.setVisibility(pos == 0 ? View.VISIBLE : View.GONE);
         }
     }
 
@@ -94,7 +102,7 @@ public class MovieReviewListPagedListAdapter extends PagedListAdapter<ApiReviewR
             return R.layout.view_movie_detail;
         }
 
-        if (trailers.size() > 0 && position <= trailers.size()) {
+        if (position <= trailers.size()) {
             return R.layout.view_trailer;
         }
 
@@ -109,9 +117,13 @@ public class MovieReviewListPagedListAdapter extends PagedListAdapter<ApiReviewR
                 ;
     }
 
-    public void addVideos(List<ApiVideoResponse.ApiVideo> videos) {
+    void addVideos(List<ApiVideoResponse.ApiVideo> videos) {
+        trailers.clear();
         trailers.addAll(videos);
         notifyItemRangeInserted(1, videos.size());
+        for (int i = 0; i < videos.size(); i++) {
+            Timber.d("video pos=" + i + ", key=" + videos.get(i).key);
+        }
     }
 
     public static class MovieDetailViewHolder extends RecyclerView.ViewHolder {
@@ -140,9 +152,11 @@ public class MovieReviewListPagedListAdapter extends PagedListAdapter<ApiReviewR
 
         public final TextView trailerTitle;
         public final Button playButton;
+        public final TextView sectionHeader;
 
         public TrailerViewHolder(@NonNull View itemView) {
             super(itemView);
+            this.sectionHeader = itemView.findViewById(R.id.trailer_section_header);
             this.trailerTitle = itemView.findViewById(R.id.title);
             this.playButton = itemView.findViewById(R.id.play);
         }
@@ -151,11 +165,13 @@ public class MovieReviewListPagedListAdapter extends PagedListAdapter<ApiReviewR
     public static class ReviewViewHolder extends RecyclerView.ViewHolder {
         public final TextView author;
         public final TextView reviews;
+        public final TextView sectionHeader;
 
         public ReviewViewHolder(@NonNull View itemView) {
             super(itemView);
             author = itemView.findViewById(R.id.author);
             reviews = itemView.findViewById(R.id.reviews);
+            sectionHeader = itemView.findViewById(R.id.review_section_header);
         }
     }
 }

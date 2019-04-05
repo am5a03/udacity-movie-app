@@ -18,8 +18,11 @@ import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 import androidx.paging.LivePagedListBuilder;
@@ -27,13 +30,15 @@ import androidx.paging.PagedList;
 import io.reactivex.Scheduler;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class MovieReviewListViewModel extends ViewModel {
+public class MovieReviewListViewModel extends ViewModel implements LifecycleObserver {
 
     private LiveData<PagedList<ApiReviewResponse.ApiReview>> pagedListLiveData;
     private LiveData<Integer> listState;
     private final MutableLiveData<Uri> videoLiveData = new MutableLiveData<>();
+    private final CompositeDisposable disposable = new CompositeDisposable();
 
     @Inject
     MovieReviewDataSourceFactory movieReviewDataSourceFactory;
@@ -88,7 +93,18 @@ public class MovieReviewListViewModel extends ViewModel {
         return clickListener;
     }
 
-    public LiveData<Uri> getVideoUriLiveData() {
+    LiveData<Uri> getVideoUriLiveData() {
         return videoLiveData;
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        disposable.dispose();
+    }
+
+    CompositeDisposable getDisposable() {
+        return disposable;
     }
 }

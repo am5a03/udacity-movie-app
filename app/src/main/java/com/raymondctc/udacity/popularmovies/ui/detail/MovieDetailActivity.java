@@ -28,7 +28,6 @@ public class MovieDetailActivity extends DaggerAppCompatActivity {
 
     private MovieReviewListPagedListAdapter pagedListAdapter;
     private RecyclerView recyclerView;
-    private AdapterObserver adapterObserver = new AdapterObserver();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,14 +40,17 @@ public class MovieDetailActivity extends DaggerAppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(pagedListAdapter);
 
-        pagedListAdapter.registerAdapterDataObserver(adapterObserver);
-
         movieReviewListViewModel.getPagedLiveData(apiMovie.id).observe(this, apiReviews -> {
             pagedListAdapter.submitList(apiReviews);
-        });
+            if (recyclerView != null && recyclerView.getLayoutManager() != null) {
+                recyclerView.getLayoutManager().scrollToPosition(0);
+            }
 
-        movieReviewListViewModel.getVideos(apiMovie.id).subscribe(apiVideoResponse -> {
-            pagedListAdapter.addVideos(apiVideoResponse.results);
+            // Workaround to avoid incorrect index in adapter,
+            // fetch trailers after fetching comments
+            movieReviewListViewModel.getDisposable().add(movieReviewListViewModel.getVideos(apiMovie.id).subscribe(apiVideoResponse -> {
+                pagedListAdapter.addVideos(apiVideoResponse.results);
+            }));
         });
 
         movieReviewListViewModel.getVideoUriLiveData().observe(this, videoUri -> {
@@ -56,21 +58,13 @@ public class MovieDetailActivity extends DaggerAppCompatActivity {
             i.setData(videoUri);
             startActivity(i);
         });
+
+        getLifecycle().addObserver(movieReviewListViewModel);
     }
 
     @Override
     protected void onDestroy() {
-        pagedListAdapter.unregisterAdapterDataObserver(adapterObserver);
         super.onDestroy();
-    }
-
-    private class AdapterObserver extends RecyclerView.AdapterDataObserver {
-        @Override
-        public void onItemRangeInserted(int positionStart, int itemCount) {
-            super.onItemRangeInserted(positionStart, itemCount);
-            if (positionStart == 0) {
-                recyclerView.getLayoutManager().scrollToPosition(0);
-            }
-        }
+        getLifecycle().removeObserver(movieReviewListViewModel);
     }
 }
