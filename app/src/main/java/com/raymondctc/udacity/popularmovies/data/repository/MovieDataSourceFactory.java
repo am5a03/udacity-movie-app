@@ -15,20 +15,22 @@ import static com.raymondctc.udacity.popularmovies.data.repository.MovieDataSour
 @Singleton
 public class MovieDataSourceFactory extends DataSource.Factory<Integer, ApiMovie> {
 
+    private final MovieDatabase database;
     private final ApiService apiService;
     private final MutableLiveData<MovieDataSource> sourceMutableLiveData = new MutableLiveData<>();
     private int type = TYPE_BY_POPULARITY;
 
     @Inject
-    public MovieDataSourceFactory(final ApiService apiService) {
+    MovieDataSourceFactory(final ApiService apiService, final MovieDatabase database) {
         this.apiService = apiService;
+        this.database = database;
     }
 
 
     @NonNull
     @Override
     public DataSource<Integer, ApiMovie> create() {
-        final MovieDataSource movieDataSource = new MovieDataSource(apiService, type);
+        final MovieDataSource movieDataSource = new MovieDataSource(apiService, database, type);
         sourceMutableLiveData.postValue(movieDataSource);
         return movieDataSource;
     }
