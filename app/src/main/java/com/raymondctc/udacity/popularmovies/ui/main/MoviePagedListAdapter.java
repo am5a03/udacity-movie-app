@@ -1,4 +1,4 @@
-package com.raymondctc.udacity.popularmovies.ui;
+package com.raymondctc.udacity.popularmovies.ui.main;
 
 import android.app.Activity;
 import android.content.Context;
@@ -8,11 +8,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.raymondctc.udacity.popularmovies.R;
-import com.raymondctc.udacity.popularmovies.data.MovieDataSource;
+import com.raymondctc.udacity.popularmovies.data.repository.ListState;
 import com.raymondctc.udacity.popularmovies.models.api.ApiMovie;
+import com.raymondctc.udacity.popularmovies.ui.detail.MovieDetailActivity;
 import com.raymondctc.udacity.popularmovies.utils.image.Util;
 import com.squareup.picasso.Picasso;
 
@@ -21,6 +21,8 @@ import androidx.core.app.ActivityOptionsCompat;
 import androidx.paging.PagedListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 import timber.log.Timber;
+
+import static com.raymondctc.udacity.popularmovies.ui.main.MainActivity.MOVIE_DETAIL_ACTIVITY_REQUEST_CODE;
 
 public class MoviePagedListAdapter extends PagedListAdapter<ApiMovie, RecyclerView.ViewHolder> {
 
@@ -58,6 +60,7 @@ public class MoviePagedListAdapter extends PagedListAdapter<ApiMovie, RecyclerVi
             ;
             Timber.d("@@ posterPath=" + imagePath);
             holder.itemView.setTag(apiMovie);
+            holder.itemView.setTag(R.id.movie_position, position);
             holder.itemView.setOnClickListener(clickListener);
         } else if (holder instanceof ProgressViewHolder){
 
@@ -73,7 +76,7 @@ public class MoviePagedListAdapter extends PagedListAdapter<ApiMovie, RecyclerVi
     }
 
     public boolean hasExtraRow() {
-        if (this.networkState == MovieDataSource.ListState.LOADING) {
+        if (this.networkState == ListState.LOADING) {
             return true;
         } else {
             return false;
@@ -125,9 +128,10 @@ public class MoviePagedListAdapter extends PagedListAdapter<ApiMovie, RecyclerVi
             if (context instanceof Activity) {
                 Intent intent = new Intent(context, MovieDetailActivity.class);
                 intent.putExtra(MovieDetailActivity.KEY_MOVIE_DETAIL, (Parcelable) v.getTag());
+                intent.putExtra(MovieDetailActivity.KEY_MOVIE_POSITION, (Integer) v.getTag(R.id.movie_position));
                 ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context, v.findViewById(R.id.movie_thumbnail), "thumbnail");
 
-                context.startActivity(intent, options.toBundle());
+                ((Activity) context).startActivityForResult(intent, MOVIE_DETAIL_ACTIVITY_REQUEST_CODE, options.toBundle());
             }
         }
     }

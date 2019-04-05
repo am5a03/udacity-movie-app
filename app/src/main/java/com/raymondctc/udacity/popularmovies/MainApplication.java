@@ -1,5 +1,6 @@
 package com.raymondctc.udacity.popularmovies;
 
+import com.facebook.stetho.Stetho;
 import com.raymondctc.udacity.popularmovies.di.DaggerAppComponent;
 
 import androidx.multidex.MultiDex;
@@ -17,6 +18,8 @@ public class MainApplication extends DaggerApplication {
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
         }
+
+        Stetho.initializeWithDefaults(this);
     }
 
     @Override

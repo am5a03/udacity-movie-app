@@ -1,6 +1,7 @@
 package com.raymondctc.udacity.popularmovies.di;
 
-import com.raymondctc.udacity.popularmovies.ui.MovieListViewModel;
+import com.raymondctc.udacity.popularmovies.ui.detail.MovieReviewListViewModel;
+import com.raymondctc.udacity.popularmovies.ui.main.MovieListViewModel;
 
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
@@ -15,6 +16,11 @@ public abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(MovieListViewModel.class)
     abstract ViewModel bindMovieListViewModel(MovieListViewModel movieListViewModel);
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(MovieReviewListViewModel.class)
+    abstract ViewModel bindMovieReviewListViewModel(MovieReviewListViewModel viewModel);
 
     @Binds
     abstract ViewModelProvider.Factory bindViewModelFactory(MovieAppViewModelFactory factory);

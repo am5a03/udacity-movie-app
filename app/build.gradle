@@ -44,8 +44,10 @@ ext {
     pagingVersion = "2.1.0"
     picassoVersion = "2.71828"
     retrofitVersion = "2.5.0"
+    roomVersion = "2.0.0"
     rxjavaVersion = "2.2.7"
     rxjavaAndroidVersion = "2.1.1"
+    stethoVerison = "1.5.1"
     timberVersion = "4.7.1"
 
     // Testing libs
@@ -60,6 +62,8 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-extensions:$lifeCycleVersion"
     implementation "androidx.lifecycle:lifecycle-viewmodel:$lifeCycleVersion"
     implementation "androidx.lifecycle:lifecycle-livedata:$lifeCycleVersion"
+    implementation "androidx.room:room-runtime:$roomVersion"
+    annotationProcessor "androidx.room:room-compiler:$roomVersion"
     implementation "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
     implementation "androidx.multidex:multidex:$androidXMultiDexVersion"
     implementation "androidx.paging:paging-runtime:$pagingVersion"
@@ -76,6 +80,7 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-moshi:$retrofitVersion"
     implementation "io.reactivex.rxjava2:rxandroid:$rxjavaAndroidVersion"
     implementation "io.reactivex.rxjava2:rxjava:$rxjavaVersion"
+    implementation "com.facebook.stetho:stetho:$stethoVerison"
 
 
     testImplementation "junit:junit:$junitVersion"

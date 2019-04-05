@@ -22,7 +22,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory;
 @Module
 public class RetrofitModule {
 
-    private static final String API = "https://api.themoviedb.org/";
+    private static final String API = "https://api.themoviedb.org/3/";
 
     @Provides
     @Singleton
@@ -39,12 +39,13 @@ public class RetrofitModule {
         httpClient.addInterceptor(logging);
         httpClient.addNetworkInterceptor(chain -> {
             final Request request = chain.request();
-            final HttpUrl url = request.url().newBuilder().addQueryParameter("api_key", BuildConfig.API_KEY_V3).build();
+            final HttpUrl url = request.url().newBuilder()
+                    .addQueryParameter("api_key", BuildConfig.API_KEY_V3).build();
             return chain.proceed(request.newBuilder().url(url).build());
         });
 
         Retrofit.Builder retroBuilder = new Retrofit.Builder()
-                .baseUrl(API + "/3/")
+                .baseUrl(API)
                 .client(httpClient.build())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(MoshiConverterFactory.create())
