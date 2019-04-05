@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,12 +25,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class MovieReviewListPagedListAdapter extends PagedListAdapter<ApiReviewResponse.ApiReview, RecyclerView.ViewHolder> {
 
-    private ApiMovie apiMovie;
+    private final ApiMovie apiMovie;
+    private final View.OnClickListener clickListener;
     private final List<ApiVideoResponse.ApiVideo> trailers = new ArrayList<>();
 
-    protected MovieReviewListPagedListAdapter(ApiMovie apiMovie) {
+    protected MovieReviewListPagedListAdapter(ApiMovie apiMovie, View.OnClickListener clickListener) {
         super(ApiReviewResponse.ApiReview.DIFF_CALLBACK);
         this.apiMovie = apiMovie;
+        this.clickListener = clickListener;
     }
 
     @NonNull
@@ -38,11 +41,15 @@ public class MovieReviewListPagedListAdapter extends PagedListAdapter<ApiReviewR
         final View view = LayoutInflater.from(parent.getContext()).inflate(viewType, parent, false);
 
         if (viewType == R.layout.view_movie_detail) {
-            return new MovieDetailViewHolder(view);
+            MovieDetailViewHolder viewHolder = new MovieDetailViewHolder(view);
+            viewHolder.favButton.setOnClickListener(this.clickListener);
+            return viewHolder;
         }
 
         if (viewType == R.layout.view_trailer) {
-            return new TrailerViewHolder(view);
+            TrailerViewHolder viewHolder = new TrailerViewHolder(view);
+            viewHolder.playButton.setOnClickListener(this.clickListener);
+            return viewHolder;
         }
 
         if (viewType == R.layout.view_review) {
@@ -63,12 +70,14 @@ public class MovieReviewListPagedListAdapter extends PagedListAdapter<ApiReviewR
             movieDetailViewHolder.overview.setText(apiMovie.overview);
             movieDetailViewHolder.year.setText(apiMovie.releaseDate);
             movieDetailViewHolder.rating.setText(String.valueOf(apiMovie.voteAverage + "/10"));
+            movieDetailViewHolder.favButton.setTag(apiMovie);
         }
 
         if (holder instanceof TrailerViewHolder) {
             ApiVideoResponse.ApiVideo video = trailers.get(position - 1);
             final TrailerViewHolder viewHolder = (TrailerViewHolder) holder;
             viewHolder.trailerTitle.setText("Trailer " + position);
+            viewHolder.playButton.setTag(video);
         }
 
         if (holder instanceof ReviewViewHolder) {
@@ -113,6 +122,7 @@ public class MovieReviewListPagedListAdapter extends PagedListAdapter<ApiReviewR
         public final TextView year;
         public final TextView rating;
         public final TextView length;
+        public final CheckBox favButton;
 
         public MovieDetailViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -122,6 +132,7 @@ public class MovieReviewListPagedListAdapter extends PagedListAdapter<ApiReviewR
             year = itemView.findViewById(R.id.year);
             rating = itemView.findViewById(R.id.rating);
             length = itemView.findViewById(R.id.length);
+            favButton = itemView.findViewById(R.id.fav);
         }
     }
 
