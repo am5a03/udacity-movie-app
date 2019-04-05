@@ -28,4 +28,7 @@ public interface MovieDao {
 
     @Query("DELETE FROM movie where fav_timestamp == 0")
     int deleteNonFavMovie();
+
+    @Query("SELECT COUNT(1) FROM movie WHERE fav_timestamp != 0")
+    int countFavMovies();
 }

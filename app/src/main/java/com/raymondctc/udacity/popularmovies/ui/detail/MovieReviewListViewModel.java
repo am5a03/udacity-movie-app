@@ -1,17 +1,19 @@
 package com.raymondctc.udacity.popularmovies.ui.detail;
 
 import android.net.Uri;
+import android.os.Bundle;
 import android.view.View;
-import android.view.animation.Transformation;
+import android.widget.CheckBox;
 
 import com.raymondctc.udacity.popularmovies.R;
 import com.raymondctc.udacity.popularmovies.api.ApiService;
-import com.raymondctc.udacity.popularmovies.data.repository.MovieDataSourceFactory;
+import com.raymondctc.udacity.popularmovies.data.repository.MovieDatabase;
 import com.raymondctc.udacity.popularmovies.data.repository.MovieReviewDataSource;
 import com.raymondctc.udacity.popularmovies.data.repository.MovieReviewDataSourceFactory;
 import com.raymondctc.udacity.popularmovies.models.api.ApiMovie;
 import com.raymondctc.udacity.popularmovies.models.api.ApiReviewResponse;
 import com.raymondctc.udacity.popularmovies.models.api.ApiVideoResponse;
+import com.raymondctc.udacity.popularmovies.models.db.Movie;
 import com.raymondctc.udacity.popularmovies.utils.image.Util;
 
 import java.util.concurrent.Executors;
@@ -27,10 +29,10 @@ import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
-import io.reactivex.Scheduler;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 public class MovieReviewListViewModel extends ViewModel implements LifecycleObserver {
@@ -46,13 +48,38 @@ public class MovieReviewListViewModel extends ViewModel implements LifecycleObse
     @Inject
     ApiService apiService;
 
+    @Inject
+    MovieDatabase database;
+
     private final View.OnClickListener clickListener = v -> {
         final int id = v.getId();
         final Object o = v.getTag();
 
         switch (id) {
             case R.id.fav:
+                final CheckBox cb = (CheckBox) v;
                 final ApiMovie movie = (ApiMovie) o;
+                final long now = System.currentTimeMillis();
+
+                if (cb.isChecked()) {
+                    movie.setFavTimestamp(now);
+                } else {
+                    movie.setFavTimestamp(0);
+                }
+
+                disposable.add(Single.just(movie)
+                        .observeOn(Schedulers.io())
+                        .subscribeOn(Schedulers.io())
+                        .subscribe(apiMovie -> {
+                            final Movie dbMovie = database.getMovieDao().getMovieById(movie.id);
+                            if (cb.isChecked()) {
+                                dbMovie.favTimestamp = now;
+                            } else {
+                                dbMovie.favTimestamp = 0;
+                            }
+                            database.getMovieDao().updateMovie(dbMovie);
+                        }));
+
                 break;
             case R.id.play:
                 final ApiVideoResponse.ApiVideo video = (ApiVideoResponse.ApiVideo) o;
@@ -62,9 +89,7 @@ public class MovieReviewListViewModel extends ViewModel implements LifecycleObse
     };
 
     @Inject
-    public MovieReviewListViewModel(ApiService apiService) {
-        this.apiService = apiService;
-    }
+    MovieReviewListViewModel() { }
 
     LiveData<PagedList<ApiReviewResponse.ApiReview>> getPagedLiveData(int id) {
         if (pagedListLiveData == null) {
@@ -86,7 +111,13 @@ public class MovieReviewListViewModel extends ViewModel implements LifecycleObse
     Single<ApiVideoResponse> getVideos(int id) {
         return apiService.getVideos(String.valueOf(id))
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+                .observeOn(AndroidSchedulers.mainThread())
+                .doAfterSuccess(new Consumer<ApiVideoResponse>() {
+                    @Override
+                    public void accept(ApiVideoResponse apiVideoResponse) throws Exception {
+
+                    }
+                });
     }
 
     View.OnClickListener getClickListener() {
@@ -95,6 +126,10 @@ public class MovieReviewListViewModel extends ViewModel implements LifecycleObse
 
     LiveData<Uri> getVideoUriLiveData() {
         return videoLiveData;
+    }
+
+    void saveInstaceState(Bundle bundle) {
+
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)

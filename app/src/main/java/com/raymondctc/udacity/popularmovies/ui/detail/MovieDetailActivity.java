@@ -48,9 +48,12 @@ public class MovieDetailActivity extends DaggerAppCompatActivity {
 
             // Workaround to avoid incorrect index in adapter,
             // fetch trailers after fetching comments
-            movieReviewListViewModel.getDisposable().add(movieReviewListViewModel.getVideos(apiMovie.id).subscribe(apiVideoResponse -> {
-                pagedListAdapter.addVideos(apiVideoResponse.results);
-            }));
+            movieReviewListViewModel.getDisposable().add(
+                    movieReviewListViewModel.getVideos(apiMovie.id)
+                    .subscribe(apiVideoResponse -> {
+                        pagedListAdapter.addVideos(apiVideoResponse.results);
+                    })
+            );
         });
 
         movieReviewListViewModel.getVideoUriLiveData().observe(this, videoUri -> {
@@ -60,6 +63,12 @@ public class MovieDetailActivity extends DaggerAppCompatActivity {
         });
 
         getLifecycle().addObserver(movieReviewListViewModel);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        movieReviewListViewModel.saveInstaceState(outState);
     }
 
     @Override

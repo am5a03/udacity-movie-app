@@ -74,6 +74,7 @@ public class MovieReviewListPagedListAdapter extends PagedListAdapter<ApiReviewR
             movieDetailViewHolder.overview.setText(apiMovie.overview);
             movieDetailViewHolder.year.setText(apiMovie.releaseDate);
             movieDetailViewHolder.rating.setText(String.valueOf(apiMovie.voteAverage + "/10"));
+            movieDetailViewHolder.favButton.setChecked(apiMovie.getFavTimestamp() != 0);
             movieDetailViewHolder.favButton.setTag(apiMovie);
         }
 

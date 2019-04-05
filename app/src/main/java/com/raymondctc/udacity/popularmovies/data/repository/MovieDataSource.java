@@ -7,6 +7,7 @@ import com.raymondctc.udacity.popularmovies.models.api.ApiMovie;
 import com.raymondctc.udacity.popularmovies.models.api.ApiMovieResponse;
 import com.raymondctc.udacity.popularmovies.models.db.Movie;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -14,7 +15,6 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.paging.PageKeyedDataSource;
 import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 
 import javax.inject.Inject;
@@ -46,11 +46,20 @@ public class MovieDataSource extends PageKeyedDataSource<String, ApiMovie> {
 
         disposable.add(getMovies(String.valueOf(1))
                 .subscribe(apiMovies -> {
+                    // Clean up non-favourite local cache
                     database.getMovieDao().deleteNonFavMovie();
+
+                    final int resultSize = apiMovies.results.size();
                     insertOrUpdateFromApi(apiMovies.results);
+
+                    final String nextKey = formatNextKey(apiMovies.page + 1, resultSize);
+
+                    final List<Movie> movieList = database.getMovieDao().getMoviesByFav(resultSize, 0);
+                    final List<ApiMovie> convertedList = transformMovieListToApiMovieList(movieList);
+
                     listState.postValue(ListState.NORMAL);
-                    callback.onResult(apiMovies.results, null, String.valueOf(apiMovies.page + 1));
-                    Timber.d("@@ apiMovies=" + apiMovies.results);
+                    callback.onResult(convertedList, null, nextKey);
+                    Timber.d("@@ apiMovies, init=" + apiMovies.results + ", nextKey=" + nextKey);
                 }, e -> {
                     listState.postValue(ListState.ERROR);
                 }));
@@ -64,12 +73,31 @@ public class MovieDataSource extends PageKeyedDataSource<String, ApiMovie> {
     @Override
     public void loadAfter(@NonNull LoadParams<String> params, @NonNull LoadCallback<String, ApiMovie> callback) {
         listState.postValue(ListState.LOADING);
-        disposable.add(getMovies(params.key)
+
+        final String[] nextKeys = parseNextKey(params.key);
+        final String apiNextKey = nextKeys[0];
+        final int dbNextKey = Integer.parseInt(nextKeys[1]);
+
+        disposable.add(getMovies(apiNextKey)
                 .subscribe(apiMovies -> {
+                    final int resultSize = apiMovies.results.size();
                     insertOrUpdateFromApi(apiMovies.results);
+
+                    database.getMovieDao().getMoviesByFav(apiMovies.results.size(), dbNextKey);
+                    final String nextKey = formatNextKey(apiMovies.page + 1, dbNextKey + resultSize);
+
+                    final List<Movie> movieList;
+                    // End of list from server, load everything that's already fetched to DB
+                    if (resultSize == 0) {
+                        movieList = database.getMovieDao().getMoviesByFav(-1, dbNextKey);
+                    } else {
+                        movieList = database.getMovieDao().getMoviesByFav(resultSize, dbNextKey);
+                    }
+
+                    final List<ApiMovie> convertedList = transformMovieListToApiMovieList(movieList);
                     listState.postValue(ListState.NORMAL);
-                    Log.d(TAG, "loadAfter: ");
-                    callback.onResult(apiMovies.results, String.valueOf(apiMovies.page + 1));
+                    callback.onResult(convertedList, nextKey);
+                    Timber.d("@@ apiMovies, loadAfter=" + apiMovies.results + ", nextKey=" + nextKey);
                 }, e -> {
                     listState.postValue(ListState.ERROR);
                     Log.e(TAG, "loadAfter: ", e);
@@ -89,7 +117,7 @@ public class MovieDataSource extends PageKeyedDataSource<String, ApiMovie> {
     }
 
     /**
-     *
+     * Check if a movie is already there, if yes, do update, if not, insert
      * @param results
      */
     private void insertOrUpdateFromApi(final List<ApiMovie> results) {
@@ -106,6 +134,30 @@ public class MovieDataSource extends PageKeyedDataSource<String, ApiMovie> {
         }
     }
 
+    /**
+     * Parse the next page key
+     * @param nextKey
+     * @return
+     */
+    private String[] parseNextKey(String nextKey) {
+        return nextKey.split(",");
+    }
+
+    /**
+     * Genearte a next page key, containing DB offset and API page
+     * @param apiPage
+     * @param dbPage
+     * @return
+     */
+    private String formatNextKey(int apiPage, int dbPage) {
+        return apiPage + "," + dbPage;
+    }
+
+    /**
+     * Create a database {@link Movie} object from {@link ApiMovie}
+     * @param apiMovie
+     * @return
+     */
     private Movie createMovieFromApiMovie(ApiMovie apiMovie) {
         final Movie movie = new Movie();
         updateMovie(movie, apiMovie);
@@ -122,6 +174,31 @@ public class MovieDataSource extends PageKeyedDataSource<String, ApiMovie> {
 
         movie.movieId = apiMovie.id;
         return movie;
+    }
+
+    /**
+     * Converting DB fetched items to UI displaying models
+     * @param movie
+     * @return
+     */
+    private ApiMovie transformMovieToApiMovie(Movie movie) {
+        final ApiMovie apiMovie = new ApiMovie();
+        apiMovie.id = movie.movieId;
+        apiMovie.originalTitle = movie.originalTitle;
+        apiMovie.overview = movie.overview;
+        apiMovie.posterPath = movie.posterPath;
+        apiMovie.releaseDate = movie.releaseDate;
+        apiMovie.voteAverage = movie.voteAverage;
+        return apiMovie;
+    }
+
+    private List<ApiMovie> transformMovieListToApiMovieList(List<Movie> movieList) {
+        final List<ApiMovie> convertedList = new ArrayList<>();
+        for (int i = 0; i < movieList.size(); i++) {
+            convertedList.add(transformMovieToApiMovie(movieList.get(i)));
+        }
+
+        return convertedList;
     }
 
     public MutableLiveData<Integer> getListState() {

@@ -47,6 +47,9 @@ public class ApiMovie implements Parcelable {
     @Json(name = "vote_average")
     public float voteAverage;
 
+    // Local only
+    private long favTimestamp;
+
     public static DiffUtil.ItemCallback<ApiMovie> DIFF_CALLBACK = new DiffUtil.ItemCallback<ApiMovie>() {
         @Override
         public boolean areItemsTheSame(@NonNull ApiMovie oldItem, @NonNull ApiMovie newItem) {
@@ -58,6 +61,8 @@ public class ApiMovie implements Parcelable {
             return oldItem.equals(newItem);
         }
     };
+
+    public ApiMovie() {}
 
     protected ApiMovie(Parcel in) {
         posterPath = in.readString();
@@ -73,6 +78,7 @@ public class ApiMovie implements Parcelable {
         voteCount = in.readInt();
         video = in.readByte() != 0;
         voteAverage = in.readFloat();
+        favTimestamp = in.readLong();
     }
 
     public static final Creator<ApiMovie> CREATOR = new Creator<ApiMovie>() {
@@ -113,5 +119,14 @@ public class ApiMovie implements Parcelable {
         dest.writeInt(voteCount);
         dest.writeByte((byte) (video ? 1 : 0));
         dest.writeFloat(voteAverage);
+        dest.writeLong(favTimestamp);
+    }
+
+    public void setFavTimestamp(long favTimestamp) {
+        this.favTimestamp = favTimestamp;
+    }
+
+    public long getFavTimestamp() {
+        return favTimestamp;
     }
 }
