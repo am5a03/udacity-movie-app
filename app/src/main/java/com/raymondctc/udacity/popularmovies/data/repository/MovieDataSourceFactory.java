@@ -13,7 +13,7 @@ import androidx.paging.DataSource;
 import static com.raymondctc.udacity.popularmovies.data.repository.MovieDataSource.TYPE_BY_POPULARITY;
 
 @Singleton
-public class MovieDataSourceFactory extends DataSource.Factory<Integer, ApiMovie> {
+public class MovieDataSourceFactory extends DataSource.Factory<String, ApiMovie> {
 
     private final MovieDatabase database;
     private final ApiService apiService;
@@ -29,7 +29,7 @@ public class MovieDataSourceFactory extends DataSource.Factory<Integer, ApiMovie
 
     @NonNull
     @Override
-    public DataSource<Integer, ApiMovie> create() {
+    public DataSource<String, ApiMovie> create() {
         final MovieDataSource movieDataSource = new MovieDataSource(apiService, database, type);
         sourceMutableLiveData.postValue(movieDataSource);
         return movieDataSource;

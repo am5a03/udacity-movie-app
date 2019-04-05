@@ -21,7 +21,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class MovieDataSource extends PageKeyedDataSource<Integer, ApiMovie> {
+public class MovieDataSource extends PageKeyedDataSource<String, ApiMovie> {
     private static final String TAG = "MovieDataSource";
     private final CompositeDisposable disposable = new CompositeDisposable();
     private final MutableLiveData<Integer> listState = new MutableLiveData<>();
@@ -41,15 +41,15 @@ public class MovieDataSource extends PageKeyedDataSource<Integer, ApiMovie> {
     }
 
     @Override
-    public void loadInitial(@NonNull LoadInitialParams<Integer> params, @NonNull LoadInitialCallback<Integer, ApiMovie> callback) {
+    public void loadInitial(@NonNull LoadInitialParams<String> params, @NonNull LoadInitialCallback<String, ApiMovie> callback) {
         listState.postValue(ListState.LOADING);
 
-        disposable.add(getMovies(1)
+        disposable.add(getMovies(String.valueOf(1))
                 .subscribe(apiMovies -> {
                     database.getMovieDao().deleteNonFavMovie();
                     insertOrUpdateFromApi(apiMovies.results);
                     listState.postValue(ListState.NORMAL);
-                    callback.onResult(apiMovies.results, null, apiMovies.page + 1);
+                    callback.onResult(apiMovies.results, null, String.valueOf(apiMovies.page + 1));
                     Timber.d("@@ apiMovies=" + apiMovies.results);
                 }, e -> {
                     listState.postValue(ListState.ERROR);
@@ -57,31 +57,31 @@ public class MovieDataSource extends PageKeyedDataSource<Integer, ApiMovie> {
     }
 
     @Override
-    public void loadBefore(@NonNull LoadParams<Integer> params, @NonNull LoadCallback<Integer, ApiMovie> callback) {
+    public void loadBefore(@NonNull LoadParams<String> params, @NonNull LoadCallback<String, ApiMovie> callback) {
         // Nothing
     }
 
     @Override
-    public void loadAfter(@NonNull LoadParams<Integer> params, @NonNull LoadCallback<Integer, ApiMovie> callback) {
+    public void loadAfter(@NonNull LoadParams<String> params, @NonNull LoadCallback<String, ApiMovie> callback) {
         listState.postValue(ListState.LOADING);
         disposable.add(getMovies(params.key)
                 .subscribe(apiMovies -> {
                     insertOrUpdateFromApi(apiMovies.results);
                     listState.postValue(ListState.NORMAL);
                     Log.d(TAG, "loadAfter: ");
-                    callback.onResult(apiMovies.results, apiMovies.page + 1);
+                    callback.onResult(apiMovies.results, String.valueOf(apiMovies.page + 1));
                 }, e -> {
                     listState.postValue(ListState.ERROR);
                     Log.e(TAG, "loadAfter: ", e);
                 }));
     }
 
-    private Single<ApiMovieResponse> getMovies(int page) {
+    private Single<ApiMovieResponse> getMovies(String page) {
         if (TYPE_BY_POPULARITY == type) {
-            return apiService.getPopularMovies(page)
+            return apiService.getPopularMovies(Integer.parseInt(page))
                     ;
         } else if (TYPE_BY_RATING == type) {
-            return apiService.getTopRatedMovies(page)
+            return apiService.getTopRatedMovies(Integer.parseInt(page))
                     ;
         } else {
             throw new IllegalArgumentException("Not a correct type");

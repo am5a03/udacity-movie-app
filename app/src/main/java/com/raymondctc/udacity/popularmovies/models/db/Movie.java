@@ -9,7 +9,7 @@ public class Movie {
     @PrimaryKey(autoGenerate = true)
     public int id;
 
-    @ColumnInfo(name = "movie_id")
+    @ColumnInfo(name = "movie_id", index = true)
     public int movieId;
 
     @ColumnInfo(name = "original_title")
