@@ -15,6 +15,7 @@ public class ChangeSortingDialogFragment extends DialogFragment {
     public interface Listener {
         void onChooseTopRating();
         void onChoosePopularity();
+        void onChooseFavourites();
     }
 
     private Listener listener;
@@ -42,6 +43,9 @@ public class ChangeSortingDialogFragment extends DialogFragment {
                             break;
                         case 1:
                             listener.onChooseTopRating();
+                            break;
+                        case 2:
+                            listener.onChooseFavourites();
                             break;
                     }
                 })
