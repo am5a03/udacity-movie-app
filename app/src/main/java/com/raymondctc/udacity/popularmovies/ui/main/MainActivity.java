@@ -96,6 +96,11 @@ public class MainActivity extends DaggerAppCompatActivity {
                         Timber.d("onChoosePopularity");
                         movieListViewModel.refreshByType(MovieDataSource.TYPE_BY_POPULARITY);
                     }
+
+                    @Override
+                    public void onChooseFavourites() {
+                        movieListViewModel.refreshByType(MovieDataSource.TYPE_BY_FAVOURITES);
+                    }
                 });
                 fragment.show(getSupportFragmentManager(), "");
                 return true;

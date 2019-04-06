@@ -14,8 +14,11 @@ import retrofit2.http.DELETE;
 @Dao
 public interface MovieDao {
 
-    @Query("SELECT * FROM movie ORDER BY fav_timestamp DESC, id LIMIT :limit OFFSET :offset")
-    List<Movie> getMoviesByFav(final int limit, final int offset);
+    @Query("SELECT * FROM movie LIMIT :limit OFFSET :offset")
+    List<Movie> getMovies(final int limit, final int offset);
+
+    @Query("SELECT * FROM movie WHERE fav_timestamp != 0 ORDER BY fav_timestamp DESC, id LIMIT :limit OFFSET :offset")
+    List<Movie> getFavMovies(final int limit, final int offset);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(Movie... movie);

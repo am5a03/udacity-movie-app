@@ -60,8 +60,10 @@ public class MovieDetailActivity extends DaggerAppCompatActivity {
 
         movieReviewListViewModel.getVideoUriLiveData().observe(this, videoUri -> {
             Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setData(videoUri);
-            startActivity(i);
+            if (i.resolveActivity(getPackageManager()) != null) {
+                i.setData(videoUri);
+                startActivity(i);
+            }
         });
 
         getLifecycle().addObserver(movieReviewListViewModel);
