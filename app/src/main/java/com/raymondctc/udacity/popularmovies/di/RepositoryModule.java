@@ -13,10 +13,10 @@ import dagger.Provides;
 @Module
 public class RepositoryModule {
 
-    @Provides
-    @Singleton
-    @NonNull
-    public MovieDataSource provideMovieDataSource(ApiService apiService, MovieDatabase database, int type) {
-        return new MovieDataSource(apiService, database, type);
-    }
+//    @Provides
+//    @Singleton
+//    @NonNull
+//    public MovieDataSource provideMovieDataSource(ApiService apiService, MovieDatabase database, int type) {
+//        return new MovieDataSource(apiService, database, type);
+//    }
 }
