@@ -112,7 +112,8 @@ public class MovieDataSource extends PageKeyedDataSource<String, ApiMovie> {
                         final List<ApiMovie> convertedList = transformMovieListToApiMovieList(movies);
                         backingList.addAll(convertedList);
                         listState.postValue(ListState.NORMAL);
-                        callback.onResult(convertedList, String.valueOf(movies.size() + dbNextKey));
+                        Timber.d("backingList.size=" + backingList.size());
+                        callback.onResult(backingList.subList(dbNextKey, backingList.size()), String.valueOf(movies.size() + dbNextKey));
                     }, e -> listState.postValue(ListState.ERROR));
         } else {
             d = getMoviesViaApi(params.key)
