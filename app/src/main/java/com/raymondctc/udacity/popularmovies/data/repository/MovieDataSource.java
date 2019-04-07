@@ -62,9 +62,9 @@ public class MovieDataSource extends PageKeyedDataSource<String, ApiMovie> {
                     .subscribe(apiMovies -> {
                         // Clean up non-favourite local cache
                         database.getMovieDao().deleteNonFavMovie();
-                        insertOrUpdateFromApi(apiMovies.results);
+                        final List<Movie> movieList = insertOrUpdateFromApi(apiMovies.results);
                         listState.postValue(ListState.NORMAL);
-                        callback.onResult(apiMovies.results, null, String.valueOf(apiMovies.page + 1));
+                        callback.onResult(transformMovieListToApiMovieList(movieList), null, String.valueOf(apiMovies.page + 1));
                         Timber.d("@@ apiMovies, init=" + apiMovies.results);
                     }, e -> {
                         final List<Movie> movieList = database.getMovieDao().getMovies(DB_LIMIT, 0);
@@ -100,9 +100,9 @@ public class MovieDataSource extends PageKeyedDataSource<String, ApiMovie> {
         } else {
             d = getMoviesViaApi(params.key)
                     .subscribe(apiMovies -> {
-                        insertOrUpdateFromApi(apiMovies.results);
+                        final List<Movie> movieList = insertOrUpdateFromApi(apiMovies.results);
                         listState.postValue(ListState.NORMAL);
-                        callback.onResult(apiMovies.results, String.valueOf(apiMovies.page + 1));
+                        callback.onResult(transformMovieListToApiMovieList(movieList), String.valueOf(apiMovies.page + 1));
                         Timber.d("@@ apiMovies, loadAfter=" + apiMovies.results);
                     }, e -> {
                         listState.postValue(ListState.ERROR);
@@ -133,7 +133,8 @@ public class MovieDataSource extends PageKeyedDataSource<String, ApiMovie> {
      * Check if a movie is already there, if yes, do update, if not, insert
      * @param results
      */
-    private void insertOrUpdateFromApi(final List<ApiMovie> results) {
+    private List<Movie> insertOrUpdateFromApi(final List<ApiMovie> results) {
+        final List<Movie> list = new ArrayList<>();
         for (int i = 0; i < results.size(); i++) {
             final ApiMovie apiMovie = results.get(i);
             Movie movie = database.getMovieDao().getMovieById(apiMovie.id);
@@ -144,7 +145,9 @@ public class MovieDataSource extends PageKeyedDataSource<String, ApiMovie> {
                 movie = updateMovie(movie, apiMovie);
                 database.getMovieDao().updateMovie(movie);
             }
+            list.add(movie);
         }
+        return list;
     }
 
     /**

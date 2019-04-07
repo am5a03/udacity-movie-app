@@ -42,4 +42,8 @@ public class MovieDataSourceFactory extends DataSource.Factory<String, ApiMovie>
     public void setRefreshType(int type) {
         this.type = type;
     }
+
+    public int getType() {
+        return type;
+    }
 }

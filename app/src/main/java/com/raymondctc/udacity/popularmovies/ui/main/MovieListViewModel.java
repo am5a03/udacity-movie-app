@@ -7,6 +7,7 @@ import com.raymondctc.udacity.popularmovies.data.repository.MovieDataSource;
 import com.raymondctc.udacity.popularmovies.data.repository.MovieDataSourceFactory;
 import com.raymondctc.udacity.popularmovies.data.repository.MovieDatabase;
 import com.raymondctc.udacity.popularmovies.models.api.ApiMovie;
+import com.raymondctc.udacity.popularmovies.models.app.MovieData;
 
 import java.util.concurrent.Executors;
 
@@ -14,6 +15,7 @@ import javax.inject.Inject;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 import androidx.paging.LivePagedListBuilder;
@@ -26,6 +28,7 @@ import static com.raymondctc.udacity.popularmovies.ui.main.MainActivity.MOVIE_DE
 public class MovieListViewModel extends ViewModel {
     private LiveData<PagedList<ApiMovie>> pagedLiveData;
     private LiveData<Integer> listState;
+    private final MutableLiveData<Integer> removeItemLiveData = new MutableLiveData<>();
 
     @Inject
     MovieDataSourceFactory movieDataSourceFactory;
@@ -78,7 +81,14 @@ public class MovieListViewModel extends ViewModel {
             final ApiMovie apiMovie = data.getParcelableExtra(KEY_MOVIE_DETAIL);
             if (pos >= 0 && apiMovie != null) {
                 pagedLiveData.getValue().get(pos).setFavTimestamp(apiMovie.getFavTimestamp());
+                if (apiMovie.getFavTimestamp() == 0 && movieDataSourceFactory.getType() == MovieDataSource.TYPE_BY_FAVOURITES) {
+                    removeItemLiveData.postValue(pos);
+                }
             }
         }
+    }
+
+    public MutableLiveData<Integer> getRemoveItemLiveData() {
+        return removeItemLiveData;
     }
 }
