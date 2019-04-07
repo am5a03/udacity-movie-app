@@ -39,6 +39,7 @@ ext {
     daggerVersion = "2.21"
     espressoVersion = "3.1.0"
     lifeCycleVersion = "2.0.0"
+    materialComponentVersion = "1.0.0"
     moshiVersion = "1.8.0"
     okhttpVersion = "3.12.0"
     pagingVersion = "2.1.0"
@@ -67,6 +68,7 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
     implementation "androidx.multidex:multidex:$androidXMultiDexVersion"
     implementation "androidx.paging:paging-runtime:$pagingVersion"
+    implementation "com.google.android.material:material:$materialComponentVersion"
     implementation "com.google.dagger:dagger:$daggerVersion"
     annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
     implementation "com.google.dagger:dagger-android-support:$daggerVersion" // if you use the support libraries
