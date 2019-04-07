@@ -33,7 +33,6 @@
         android:layout_marginLeft="@dimen/materialUnitMedium"
         />
     <ImageView
-        android:transitionName="thumbnail"
         android:layout_marginTop="@dimen/materialUnitMedium"
         app:layout_constraintLeft_toLeftOf="@id/vertical_guideline_left"
         app:layout_constraintTop_toBottomOf="@id/title"

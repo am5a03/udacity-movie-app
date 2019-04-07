@@ -82,7 +82,8 @@ public class MovieListViewModel extends ViewModel {
             if (pos >= 0 && apiMovie != null) {
                 pagedLiveData.getValue().get(pos).setFavTimestamp(apiMovie.getFavTimestamp());
                 if (apiMovie.getFavTimestamp() == 0 && movieDataSourceFactory.getType() == MovieDataSource.TYPE_BY_FAVOURITES) {
-                    removeItemLiveData.postValue(pos);
+                    movieDataSourceFactory.removeItemFromBackingList(pos);
+                    movieDataSourceFactory.getSourceMutableLiveData().getValue().invalidate();
                 }
             }
         }
