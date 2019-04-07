@@ -77,6 +77,10 @@ public class MainActivity extends DaggerAppCompatActivity {
                         swipeRefreshLayout.setRefreshing(false);
                     }
                 });
+        movieListViewModel.getRemoveItemLiveData()
+                .observe(this, pos -> {
+                    pagedListAdapter.notifyItemRemoved(pos);
+                });
     }
 
     @Override
@@ -121,6 +125,5 @@ public class MainActivity extends DaggerAppCompatActivity {
         if (resultCode == RESULT_OK) {
             movieListViewModel.handleActivityResult(requestCode, resultCode, data);
         }
-
     }
 }

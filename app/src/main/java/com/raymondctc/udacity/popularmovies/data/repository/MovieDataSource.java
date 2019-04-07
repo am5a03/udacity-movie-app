@@ -9,6 +9,7 @@ import com.raymondctc.udacity.popularmovies.models.db.Movie;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
@@ -38,33 +39,48 @@ public class MovieDataSource extends PageKeyedDataSource<String, ApiMovie> {
 
     private static final int DB_LIMIT = 20;
 
+    private final List<ApiMovie> backingList;
+
     @Inject
-    public MovieDataSource(ApiService apiService, MovieDatabase database, int type) {
+    public MovieDataSource(ApiService apiService, MovieDatabase database, int type,
+                           List<ApiMovie> backingList) {
         this.apiService = apiService;
         this.database = database;
         this.type = type;
+        this.backingList = backingList;
     }
 
     @Override
     public void loadInitial(@NonNull LoadInitialParams<String> params, @NonNull LoadInitialCallback<String, ApiMovie> callback) {
         listState.postValue(ListState.LOADING);
 
+        Timber.d("@@ DS=" + this);
+
         final Disposable d;
         if (type == TYPE_BY_FAVOURITES) {
-            d = getMoviesViaDb(DB_LIMIT, 0)
-                    .subscribe(movies -> {
-                        final List<ApiMovie> convertedList = transformMovieListToApiMovieList(movies);
-                        listState.postValue(ListState.NORMAL);
-                        callback.onResult(convertedList, null, String.valueOf(movies.size()));
-                    }, e -> listState.postValue(ListState.ERROR));
+            if (backingList.isEmpty()) {
+                d = getMoviesViaDb(DB_LIMIT, 0)
+                        .subscribe(movies -> {
+                            final List<ApiMovie> convertedList = transformMovieListToApiMovieList(movies);
+                            backingList.addAll(convertedList);
+                            listState.postValue(ListState.NORMAL);
+                            callback.onResult(convertedList, null, String.valueOf(movies.size()));
+                        }, e -> listState.postValue(ListState.ERROR));
+                disposable.add(d);
+            } else {
+                final List<ApiMovie> list = new ArrayList<>(backingList);
+                callback.onResult(list, null, String.valueOf(backingList.size()));
+            }
+
         } else {
+            backingList.clear();
             d = getMoviesViaApi(String.valueOf(1))
                     .subscribe(apiMovies -> {
                         // Clean up non-favourite local cache
                         database.getMovieDao().deleteNonFavMovie();
-                        insertOrUpdateFromApi(apiMovies.results);
+                        final List<Movie> movieList = insertOrUpdateFromApi(apiMovies.results);
                         listState.postValue(ListState.NORMAL);
-                        callback.onResult(apiMovies.results, null, String.valueOf(apiMovies.page + 1));
+                        callback.onResult(transformMovieListToApiMovieList(movieList), null, String.valueOf(apiMovies.page + 1));
                         Timber.d("@@ apiMovies, init=" + apiMovies.results);
                     }, e -> {
                         final List<Movie> movieList = database.getMovieDao().getMovies(DB_LIMIT, 0);
@@ -72,9 +88,9 @@ public class MovieDataSource extends PageKeyedDataSource<String, ApiMovie> {
                         callback.onResult(convertedList, null, formatNextKey(1, DB_LIMIT));
                         listState.postValue(ListState.ERROR);
                     });
-        }
 
-        disposable.add(d);
+            disposable.add(d);
+        }
     }
 
     @Override
@@ -94,15 +110,17 @@ public class MovieDataSource extends PageKeyedDataSource<String, ApiMovie> {
             d = getMoviesViaDb(DB_LIMIT, dbNextKey)
                     .subscribe(movies -> {
                         final List<ApiMovie> convertedList = transformMovieListToApiMovieList(movies);
+                        backingList.addAll(convertedList);
                         listState.postValue(ListState.NORMAL);
-                        callback.onResult(convertedList, String.valueOf(movies.size() + dbNextKey));
+                        Timber.d("backingList.size=" + backingList.size());
+                        callback.onResult(backingList.subList(dbNextKey, backingList.size()), String.valueOf(movies.size() + dbNextKey));
                     }, e -> listState.postValue(ListState.ERROR));
         } else {
             d = getMoviesViaApi(params.key)
                     .subscribe(apiMovies -> {
-                        insertOrUpdateFromApi(apiMovies.results);
+                        final List<Movie> movieList = insertOrUpdateFromApi(apiMovies.results);
                         listState.postValue(ListState.NORMAL);
-                        callback.onResult(apiMovies.results, String.valueOf(apiMovies.page + 1));
+                        callback.onResult(transformMovieListToApiMovieList(movieList), String.valueOf(apiMovies.page + 1));
                         Timber.d("@@ apiMovies, loadAfter=" + apiMovies.results);
                     }, e -> {
                         listState.postValue(ListState.ERROR);
@@ -133,7 +151,8 @@ public class MovieDataSource extends PageKeyedDataSource<String, ApiMovie> {
      * Check if a movie is already there, if yes, do update, if not, insert
      * @param results
      */
-    private void insertOrUpdateFromApi(final List<ApiMovie> results) {
+    private List<Movie> insertOrUpdateFromApi(final List<ApiMovie> results) {
+        final List<Movie> list = new ArrayList<>();
         for (int i = 0; i < results.size(); i++) {
             final ApiMovie apiMovie = results.get(i);
             Movie movie = database.getMovieDao().getMovieById(apiMovie.id);
@@ -144,7 +163,9 @@ public class MovieDataSource extends PageKeyedDataSource<String, ApiMovie> {
                 movie = updateMovie(movie, apiMovie);
                 database.getMovieDao().updateMovie(movie);
             }
+            list.add(movie);
         }
+        return list;
     }
 
     /**

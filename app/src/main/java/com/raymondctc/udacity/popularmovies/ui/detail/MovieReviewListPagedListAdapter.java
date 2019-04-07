@@ -14,6 +14,7 @@ import com.raymondctc.udacity.popularmovies.R;
 import com.raymondctc.udacity.popularmovies.models.api.ApiMovie;
 import com.raymondctc.udacity.popularmovies.models.api.ApiReviewResponse;
 import com.raymondctc.udacity.popularmovies.models.api.ApiVideoResponse;
+import com.raymondctc.udacity.popularmovies.models.db.Movie;
 import com.raymondctc.udacity.popularmovies.utils.image.Util;
 import com.squareup.picasso.Picasso;
 
@@ -32,9 +33,9 @@ public class MovieReviewListPagedListAdapter extends PagedListAdapter<ApiReviewR
     private final View.OnClickListener clickListener;
     private final List<ApiVideoResponse.ApiVideo> trailers = Collections.synchronizedList(new ArrayList<>());
 
-    MovieReviewListPagedListAdapter(ApiMovie apiMovie, View.OnClickListener clickListener) {
+    MovieReviewListPagedListAdapter(ApiMovie movie, View.OnClickListener clickListener) {
         super(ApiReviewResponse.ApiReview.DIFF_CALLBACK);
-        this.apiMovie = apiMovie;
+        this.apiMovie = movie;
         this.clickListener = clickListener;
     }
 
@@ -74,7 +75,7 @@ public class MovieReviewListPagedListAdapter extends PagedListAdapter<ApiReviewR
             movieDetailViewHolder.overview.setText(apiMovie.overview);
             movieDetailViewHolder.year.setText(apiMovie.releaseDate);
             movieDetailViewHolder.rating.setText(String.valueOf(apiMovie.voteAverage + "/10"));
-            movieDetailViewHolder.favButton.setChecked(apiMovie.getFavTimestamp() != 0);
+            movieDetailViewHolder.favButton.setChecked(apiMovie.getFavTimestamp()!= 0);
             movieDetailViewHolder.favButton.setTag(apiMovie);
         }
 

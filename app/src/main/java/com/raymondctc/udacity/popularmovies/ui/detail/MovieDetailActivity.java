@@ -2,13 +2,21 @@ package com.raymondctc.udacity.popularmovies.ui.detail;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 
+import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.raymondctc.udacity.popularmovies.R;
 import com.raymondctc.udacity.popularmovies.models.api.ApiMovie;
+import com.raymondctc.udacity.popularmovies.utils.image.Util;
+import com.squareup.picasso.Picasso;
 
 import javax.inject.Inject;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -37,6 +45,16 @@ public class MovieDetailActivity extends DaggerAppCompatActivity {
         movieReviewListViewModel = ViewModelProviders.of(this, viewModelFactory)
                 .get(MovieReviewListViewModel.class);
         apiMovie = getIntent().getParcelableExtra(KEY_MOVIE_DETAIL);
+
+        final ImageView imageView = findViewById(R.id.movie_thumbnail);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
+        final CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        Picasso.get().load(Util.formatImagePath(apiMovie.posterPath)).into(imageView);
+        collapsingToolbarLayout.setTitle(" "); // It cannot show multiple lines....
+
         moviePositionInMainActivity = getIntent().getIntExtra(KEY_MOVIE_POSITION, 0);
         pagedListAdapter = new MovieReviewListPagedListAdapter(apiMovie, movieReviewListViewModel.getClickListener());
 
@@ -67,6 +85,14 @@ public class MovieDetailActivity extends DaggerAppCompatActivity {
         });
 
         getLifecycle().addObserver(movieReviewListViewModel);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

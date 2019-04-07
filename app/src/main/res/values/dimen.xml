@@ -9,4 +9,6 @@
 
     <dimen name="detailMovieTitlePadding">24dp</dimen>
     <dimen name="detailMovieTextSize">48sp</dimen>
+
+    <dimen name="detailMovieMarginLeft">32dp</dimen>
 </resources>
