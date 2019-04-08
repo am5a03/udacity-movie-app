@@ -103,6 +103,7 @@ public class MainActivity extends DaggerAppCompatActivity {
 
                     @Override
                     public void onChooseFavourites() {
+						Timber.d("onChooseFavourites");
                         movieListViewModel.refreshByType(MovieDataSource.TYPE_BY_FAVOURITES);
                     }
                 });
